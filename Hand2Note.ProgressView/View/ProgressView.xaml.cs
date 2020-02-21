@@ -31,9 +31,34 @@ namespace Hand2Note.ProgressView.View
                     v => v.Progress.Value
                 ));
                 
+                disposable(this.OneWayBind(ViewModel,
+                    vm => vm.IsProgresslessOperation,
+                    v => v.Progress.IsIndeterminate
+                ));
+                
                 disposable(this.BindCommand(ViewModel,
                     vm => vm.Command,
                     v => v.ControlButton
+                ));
+                
+                disposable(this.OneWayBind(ViewModel,
+                    vm => vm.Done,
+                    v => v.DonePart.Text
+                ));
+                
+                disposable(this.OneWayBind(ViewModel,
+                    vm => vm.Done,
+                    v => v.DonePart.Text
+                ));
+                
+                disposable(this.OneWayBind(ViewModel,
+                    vm => vm.RemainingTime,
+                    v => v.RemainginTimePart.Text
+                ));
+                
+                disposable(this.OneWayBind(ViewModel,
+                    vm => vm.Speed,
+                    v => v.SpeedPart.Text
                 ));
             });
         }

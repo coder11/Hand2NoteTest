@@ -1,3 +1,4 @@
+using Hand2Note.ProgressView.Model;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -7,7 +8,7 @@ namespace Hand2Note.ProgressView.ViewModel
     {
         public MainViewModel()
         {
-            FileDownload = new ProgressViewModel();
+            FileDownload = new ProgressViewModel(new DownloadMeService());
         }
 
         [Reactive]

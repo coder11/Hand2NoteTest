@@ -3,9 +3,6 @@ using System.ComponentModel;
 using System.Net;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using ReactiveUI;
 
 namespace Hand2Note.ProgressView.Model
