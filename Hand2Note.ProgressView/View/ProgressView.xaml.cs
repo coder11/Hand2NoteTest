@@ -1,4 +1,3 @@
-using Hand2Note.ProgressView.ViewModel;
 using ReactiveUI;
 
 namespace Hand2Note.ProgressView.View
@@ -38,8 +37,8 @@ namespace Hand2Note.ProgressView.View
                 
                 disposable(this.OneWayBind(ViewModel,
                     vm => vm.CommandButtonText,
-                    v => v.ControlButton.Content
-                ));
+                    v => v.ControlButton.Content,
+                    x => x?.ToUpperInvariant()));
                 
                 disposable(this.OneWayBind(ViewModel,
                     vm => vm.ProgressText,
