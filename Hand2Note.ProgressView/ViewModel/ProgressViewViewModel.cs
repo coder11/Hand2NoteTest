@@ -4,10 +4,6 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.Remoting.Messaging;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Hand2Note.ProgressView.Model;
 using Hand2Note.ProgressView.Model.DownloadMe;
 using Hand2Note.ProgressView.Model.Operations;
 using Hand2Note.ProgressView.Util;
@@ -52,7 +48,7 @@ namespace Hand2Note.ProgressView.ViewModel
                             caption = "Finishing";
                             break;
                         
-                        case DownloadMeStateType.Pausing:
+                        case DownloadMeStateType.Paused:
                             caption = "Paused";
                             break;
                             
@@ -65,33 +61,61 @@ namespace Hand2Note.ProgressView.ViewModel
                         DownloadMeStateType.Connecting,
                         DownloadMeStateType.Downloading,
                         DownloadMeStateType.Finishing);
-                    
-                    bool allowStart = x.State.In(
-                        DownloadMeStateType.Initial,
-                        DownloadMeStateType.Finished);
 
+                    bool HasFinished = x.State == DownloadMeStateType.Finished;
+                    
                     bool allowResume = x.State == DownloadMeStateType.Paused;
                     
                     return new
                     {
-                        x.TotalProgress,
+                        x.Progress,
                         x.ProgressIncrement,
-                        fsm.TotalBytesToDownload,
+                        ProgressMaxValue = fsm.TotalBytesToDownload,
+                        
+                        HasFinished = HasFinished, 
                         
                         AllowPause = allowPause,
-                        AllowStart = allowStart,
                         AllowResume = allowResume,
                         
+                        HideSpeed = false,
+                        HideProgressText = false,
+                        HideRemainingTime = false,
                         
-                        IsProgressless = isProgressless,
+                        DisplayAsProgressless = isProgressless,
                         Caption = caption,
                     };
+                })
+                .StartWith(new
+                {
+                    Progress = 0,
+                    ProgressIncrement = (int?) null,
+                    ProgressMaxValue = 1,
+                    HasFinished = false,
+                    AllowPause = false,
+                    AllowResume = false,
+                    HideSpeed = true,
+                    HideProgressText = true,
+                    HideRemainingTime = true,
+                    DisplayAsProgressless = false,
+                    Caption = string.Empty
                 });
+
+            var startCommandFired = this.WhenAnyObservable(x => x._startCommand); 
+
+            var isRunning = startCommandFired
+                .Select(x => true)
+                .Merge(stateInfos
+                    .Where(x => x.HasFinished)
+                    .Select(x => false))
+                .StartWith(false);
             
-            _startCommand = ReactiveCommand.Create(fsm.OnStart, stateInfos
-                .Select(x => x.AllowStart)
-                .StartWith(true)
-                .ObserveOn(RxApp.MainThreadScheduler));
+            var wasNeverRun = startCommandFired
+                .Select(x => true)
+                .StartWith(true);
+                
+            _startCommand = ReactiveCommand.Create(fsm.OnStart, isRunning.Select(x => !x));
+            
+            _restartCommand = _startCommand;
             
             _pauseCommand = ReactiveCommand.Create(fsm.OnPause, stateInfos.Select(x => x.AllowPause)
                 .ObserveOn(RxApp.MainThreadScheduler));
@@ -99,63 +123,71 @@ namespace Hand2Note.ProgressView.ViewModel
             _resumeCommand = ReactiveCommand.Create(fsm.OnResume, stateInfos.Select(x => x.AllowResume)
                 .ObserveOn(RxApp.MainThreadScheduler));
 
-            stateInfos.Select(x =>
-                {
-                    if (x.AllowStart)
-                        return _startCommand;
+            var currentlyAvailableCommand =
+                Observable.CombineLatest(stateInfos, isRunning, wasNeverRun,
+                    (stateInfo, isRunning_, wasNeverRun_) =>
+                    {
+                        if (isRunning_ && stateInfo.AllowPause)
+                            return new
+                            {
+                                Command = _pauseCommand,
+                                Caption = "Pause"
+                            };
 
-                    if (x.AllowPause)
-                        return _pauseCommand;
+                        if (isRunning_ && stateInfo.AllowResume)
+                            return new
+                            {
+                                Command = _resumeCommand,
+                                Caption = "Resume"
+                            };
 
-                    if (x.AllowResume)
-                        return _resumeCommand;
+                        if (wasNeverRun_)
+                            return new
+                            {
+                                Command = _startCommand,
+                                Caption = "Start"
+                            };
 
-                    return _startCommand;
-                })
-                .StartWith(_startCommand)
+                        return new
+                        {
+                            Command = _startCommand,
+                            Caption = "Restart"
+                        };
+                    });
+                
+            currentlyAvailableCommand
+                .Select(x => x.Command)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .ToPropertyEx(this, x => x.Command);
 
-            stateInfos.Select(x =>
-                {
-                    if (x.AllowStart)
-                        return "Start";
-
-                    if (x.AllowPause)
-                        return "Pause";
-
-                    if (x.AllowResume)
-                        return "Resume";
-
-                    return "Start";
-                })
-                .StartWith("Start")
+            currentlyAvailableCommand
+                .Select(x => x.Caption)
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .ToPropertyEx(this, x => x.ButtonText);
-            
+                .ToPropertyEx(this, x => x.CommandButtonText);
+
             stateInfos.Select(x => x.Caption)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .ToPropertyEx(this, x => x.Caption);
 
-            stateInfos.Select(x => x.TotalProgress)
+            stateInfos.Select(x => x.Progress)
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .ToPropertyEx(this, x => x.ProgressValue);
+                .ToPropertyEx(this, x => x.Progress);
             
-            stateInfos.Select(x => x.TotalBytesToDownload)
+            stateInfos.Select(x => x.ProgressMaxValue)
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .ToPropertyEx(this, x => x.ProgressMax);
+                .ToPropertyEx(this, x => x.ProgressMaxValue);
             
-            stateInfos.Select(x => x.IsProgressless)
+            stateInfos.Select(x => x.DisplayAsProgressless)
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .ToPropertyEx(this, x => x.IsProgresslessOperation);
+                .ToPropertyEx(this, x => x.DisplayAsProgressless);
 
             var consecutiveProgressNotifications = stateInfos
                 .Select(x => new
                 {
-                    x.IsProgressless,
+                    IsProgressless = x.DisplayAsProgressless,
                     x.ProgressIncrement,
-                    x.TotalProgress,
-                    x.TotalBytesToDownload
+                    TotalProgress = x.Progress,
+                    TotalBytesToDownload = x.ProgressMaxValue
                 })
                 .Scan(new
                 {
@@ -207,7 +239,7 @@ namespace Hand2Note.ProgressView.ViewModel
                         new BytesUnitInfo().GetPresentableText(x.TotalBytesToDownload));
                 })
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .ToPropertyEx(this, x => x.Done);
+                .ToPropertyEx(this, x => x.ProgressText);
                 
             remainingTime
                 .Select(x =>
@@ -227,22 +259,29 @@ namespace Hand2Note.ProgressView.ViewModel
         }
         
         private ReactiveCommand<Unit, Unit> _startCommand;
+        private ReactiveCommand<Unit, Unit> _restartCommand;
         private ReactiveCommand<Unit, Unit> _pauseCommand;
         private ReactiveCommand<Unit, Unit> _resumeCommand;
 
-        public int ProgressMax { [ObservableAsProperty] get; }
+        public int ProgressMaxValue { [ObservableAsProperty] get; }
 
-        public int ProgressValue { [ObservableAsProperty] get; }
+        public int Progress { [ObservableAsProperty] get; }
         
-        public bool IsProgresslessOperation { [ObservableAsProperty] get; }
+        public bool DisplayAsProgressless { [ObservableAsProperty] get; }
 
         public string Speed { [ObservableAsProperty] get; }
         
-        public string Done { [ObservableAsProperty] get; }
+        public string SpeedVisible { [ObservableAsProperty] get; }
+        
+        public string ProgressText { [ObservableAsProperty] get; }
+        
+        public string ProgressTextVisible { [ObservableAsProperty] get; }
         
         public string RemainingTime { [ObservableAsProperty] get; }
         
-        public string ButtonText { [ObservableAsProperty] get; }
+        public string RemainingTimeVisible { [ObservableAsProperty] get; }
+        
+        public string CommandButtonText { [ObservableAsProperty] get; }
 
         public string Caption { [ObservableAsProperty] get; }
 

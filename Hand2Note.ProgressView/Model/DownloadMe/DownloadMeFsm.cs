@@ -44,7 +44,7 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
                         token);
                         
                     ChangeState(newState);
-                    Task.Run(() => _downloadMe.StartDownload(token.Token, _state.TotalProgress));
+                    Task.Run(() => _downloadMe.StartDownload(token.Token, _state.Progress));
                     break;
                     
                 default:
@@ -79,7 +79,7 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
                     var newState = _state.UpdateToken(newToken)
                         .UpdateType(DownloadMeStateType.Starting);
                     ChangeState(newState);
-                    Task.Run(() => _downloadMe.StartDownload(newToken.Token, _state.TotalProgress));
+                    Task.Run(() => _downloadMe.StartDownload(newToken.Token, _state.Progress));
                     break;
                     
                 default:

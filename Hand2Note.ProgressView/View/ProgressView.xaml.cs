@@ -17,22 +17,22 @@ namespace Hand2Note.ProgressView.View
                 ));
                 
                 disposable(this.OneWayBind(ViewModel,
-                    vm => vm.ButtonText,
+                    vm => vm.CommandButtonText,
                     v => v.ControlButton.Content
                 ));
                 
                 disposable(this.OneWayBind(ViewModel,
-                    vm => vm.ProgressMax,
+                    vm => vm.ProgressMaxValue,
                     v => v.Progress.Maximum
                 ));
                 
                 disposable(this.OneWayBind(ViewModel,
-                    vm => vm.ProgressValue,
+                    vm => vm.Progress,
                     v => v.Progress.Value
                 ));
                 
                 disposable(this.OneWayBind(ViewModel,
-                    vm => vm.IsProgresslessOperation,
+                    vm => vm.DisplayAsProgressless,
                     v => v.Progress.IsIndeterminate
                 ));
                 
@@ -42,23 +42,23 @@ namespace Hand2Note.ProgressView.View
                 ));
                 
                 disposable(this.OneWayBind(ViewModel,
-                    vm => vm.Done,
-                    v => v.DonePart.Text
+                    vm => vm.ProgressText,
+                    v => v.ProgressText.Text
                 ));
                 
                 disposable(this.OneWayBind(ViewModel,
-                    vm => vm.Done,
-                    v => v.DonePart.Text
+                    vm => vm.ProgressText,
+                    v => v.ProgressText.Text
                 ));
                 
                 disposable(this.OneWayBind(ViewModel,
                     vm => vm.RemainingTime,
-                    v => v.RemainginTimePart.Text
+                    v => v.RemainingTime.Text
                 ));
                 
                 disposable(this.OneWayBind(ViewModel,
                     vm => vm.Speed,
-                    v => v.SpeedPart.Text
+                    v => v.Speed.Text
                 ));
             });
         }

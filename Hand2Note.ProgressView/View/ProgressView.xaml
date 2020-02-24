@@ -20,15 +20,15 @@
         <ProgressBar x:Name="Progress" 
                      Minimum="0"/>
         
-        <TextBlock x:Name="DonePart">
+        <TextBlock x:Name="ProgressText">
             Done
         </TextBlock>
         
-        <TextBlock x:Name="SpeedPart">
+        <TextBlock x:Name="Speed">
             Speed
         </TextBlock>
         
-        <TextBlock x:Name="RemainginTimePart">
+        <TextBlock x:Name="RemainingTime">
             Time
         </TextBlock>
         
