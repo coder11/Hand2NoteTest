@@ -41,9 +41,9 @@ namespace Hand2Note.ProgressView.ViewModel
         {
             var fsm = DownloadMeFsm.Create();
             var notifications = DownloadMeProgressViewAdapter.FsmStatesToNotifications(fsm);
-            var config = new ProgressViewModelConfig()
+            var config = new ProgressViewModelConfig
             {
-                Units = new BytesUnitInfo()
+                Units = new BytesUnitInfo(),
             };
 
             DoDownloadMeVm = new ProgressViewModel(notifications, config, fsm.OnStart, fsm.OnPause, fsm.OnResume);

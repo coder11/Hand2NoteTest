@@ -109,7 +109,6 @@
     <Compile Include="Model\DownloadMe\DownloadMeStateType.cs" />
     <Compile Include="Model\FileDownloadService.cs" />
     <Compile Include="ThirdParty\DownloadMe.cs" />
-    <Compile Include="UI\CornerRadiusSetter.cs" />
     <Compile Include="Util\ObservableHelpers.cs" />
     <Compile Include="Util\CollectionExtensions.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
@@ -162,6 +161,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="UI" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.6.0.8\build\Fody.targets" Condition="Exists('..\packages\Fody.6.0.8\build\Fody.targets')" />
