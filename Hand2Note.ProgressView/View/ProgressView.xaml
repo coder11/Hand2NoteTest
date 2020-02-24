@@ -6,58 +6,12 @@
                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                          xmlns:ui="clr-namespace:Hand2Note.ProgressView.UI"
 
                           mc:Ignorable="d"
                           d:DesignHeight="300" 
                           d:DesignWidth="100">
-    <UserControl.Resources>
-        <Style x:Key="Light" TargetType="StackPanel">
-            <Style.Resources>
-                <Style TargetType="TextBlock" x:Key="SecondaryText">
-                    <Setter Property="Foreground" Value="Gray" />
-                </Style>
-                
-                <Style TargetType="TextBlock" x:Key="PrimaryText">
-                    <Setter Property="Foreground" Value="Black" />
-                </Style>
-                
-                <Style TargetType="Button">
-                    <Setter Property="Background" Value="white" />
-                    <Setter Property="ui:CornerRadiusSetter.CornerRadius" Value="4" />
-                </Style>
-                
-                <Style TargetType="ProgressBar">
-                    <Setter Property="BorderThickness" Value="0" />
-                    <Setter Property="Foreground" Value="#2FC30B" />
-                </Style>
-            </Style.Resources>
-        </Style>
-        
-        <Style x:Key="Dark" TargetType="StackPanel">
-            <Style.Resources>
-                <Style TargetType="TextBlock" x:Key="SecondaryText">
-                    <Setter Property="Foreground" Value="#919191" />
-                </Style>
-                
-                <Style TargetType="TextBlock" x:Key="PrimaryText">
-                    <Setter Property="Foreground" Value="#F0F0F0" />
-                </Style>
-                
-                <Style TargetType="Button">
-                    <Setter Property="Background" Value="Transparent" />
-                    <Setter Property="ui:CornerRadiusSetter.CornerRadius" Value="4" />
-                </Style>
-                
-                <Style TargetType="ProgressBar">
-                    <Setter Property="BorderThickness" Value="0" />
-                    <Setter Property="Foreground" Value="Yellow" />
-                </Style>
-            </Style.Resources>
-        </Style>
-    </UserControl.Resources>
-    
-    <StackPanel Orientation="Vertical" Style="{StaticResource Dark}">
+
+    <StackPanel Orientation="Vertical">
         <TextBlock x:Name="Caption"
                    HorizontalAlignment="Left"
                    Margin="2 10 0 -3"
@@ -81,23 +35,20 @@
 
             <TextBlock x:Name="ProgressText"
                        Style="{DynamicResource SecondaryText}"
-                       Grid.Column="0"
-                       FontSize="10.5">
+                       Grid.Column="0">
                 Done
             </TextBlock>
             
             <TextBlock x:Name="Speed"
                        Style="{DynamicResource SecondaryText}"
-                       Grid.Column="1"
-                       FontSize="10.5">
+                       Grid.Column="1">
                 Speed
             </TextBlock>
             
             <TextBlock x:Name="RemainingTime"
                        Style="{DynamicResource SecondaryText}"
                        Grid.Column="2"
-                       HorizontalAlignment="Right"
-                       FontSize="10.5">
+                       HorizontalAlignment="Right">
                 Time
             </TextBlock>
         </Grid>
