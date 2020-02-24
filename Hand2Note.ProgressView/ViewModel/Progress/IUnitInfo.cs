@@ -1,4 +1,4 @@
-namespace Hand2Note.ProgressView.Model.Progress
+namespace Hand2Note.ProgressView.ViewModel.Progress
 {
     public interface IUnitInfo
     {

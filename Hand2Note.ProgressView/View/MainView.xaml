@@ -9,14 +9,10 @@
                           xmlns:viewModel="clr-namespace:Hand2Note.ProgressView.ViewModel"
                           mc:Ignorable="d"
                           d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+    <Grid Background="#272727">
         <StackPanel>
-            <local:ProgressView x:Name="DownloadMe" />
-            
-            <!--<view:ProgressView></view:ProgressView>
-            <view:ProgressView></view:ProgressView>
-            <view:ProgressView></view:ProgressView>
-            <view:ProgressView></view:ProgressView>-->
+            <local:ProgressView x:Name="DownloadMe" HorizontalAlignment="Center"
+                                Width="400"/>
         </StackPanel>
     </Grid>
 </rxui:ReactiveUserControl>

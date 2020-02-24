@@ -4,8 +4,8 @@ using System;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using Hand2Note.ProgressView.Model.Progress;
 using Hand2Note.ProgressView.Util;
+using Hand2Note.ProgressView.ViewModel.Progress;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -18,9 +18,9 @@ namespace Hand2Note.ProgressView.ViewModel
 
         private readonly TimeSpan TextRefreshRate = TimeSpan.FromSeconds(1);
         
-        public ProgressViewModel(IObservable<IProgressNotification> notifications, Action onStart, Action onPause, Action onResume)
+        public ProgressViewModel(IObservable<IProgressNotification> notifications, ProgressViewModelConfig config, Action onStart, Action onPause, Action onResume)
         {
-            InitializeObservables(notifications, onStart, onPause, onResume);
+            InitializeObservables(notifications, config, onStart, onPause, onResume);
         }
 
         private ReactiveCommand<Unit, Unit> _startCommand;
@@ -52,7 +52,7 @@ namespace Hand2Note.ProgressView.ViewModel
 
         public ReactiveCommand<Unit, Unit> Command { [ObservableAsProperty] get; }
         
-        private void InitializeObservables(IObservable<IProgressNotification> notifications, Action onStart, Action onPause, Action onResume)
+        private void InitializeObservables(IObservable<IProgressNotification> notifications, ProgressViewModelConfig config, Action onStart, Action onPause, Action onResume)
         {
             notifications = notifications.StartWith(new ProgressNotification(
                 0,
@@ -103,27 +103,27 @@ namespace Hand2Note.ProgressView.ViewModel
                             return new
                             {
                                 Command = _pauseCommand,
-                                Caption = "Pause"
+                                Caption = config.PauseButtonText
                             };
 
                         if (isRunning_ && stateInfo.AllowResume)
                             return new
                             {
                                 Command = _resumeCommand,
-                                Caption = "Resume"
+                                Caption = config.ResumeButtonText
                             };
 
                         if (wasNeverRun_)
                             return new
                             {
                                 Command = _startCommand,
-                                Caption = "Start"
+                                Caption = config.StartButtonText
                             };
 
                         return new
                         {
                             Command = _startCommand,
-                            Caption = "Restart"
+                            Caption = config.RestartButtonText
                         };
                     });
 
@@ -187,21 +187,21 @@ namespace Hand2Note.ProgressView.ViewModel
                 {
                     if (Double.IsInfinity(x) || Double.IsNaN(x))
                     {
-                        return "?";
+                        return string.Format(config.SpeedTextTemplate, "?");
                     }
 
                     var rounded = (int) Math.Round(x);
-                    var text = new BytesUnitInfo().GetPresentableText(rounded);
-                    return $"Speed: {text}/s";
+                    var text = config.Units.GetPresentableText(rounded);
+                    return string.Format(config.SpeedTextTemplate, text);
                 })
                 .ToPropertyOnMainThread(this, x => x.Speed);
 
             consecutiveProgressNotifications
                 .Select(x =>
                 {
-                    return string.Format("Downloaded: {0} / {1}",
-                        new BytesUnitInfo().GetPresentableText(x.TotalProgress),
-                        new BytesUnitInfo().GetPresentableText(x.TotalBytesToDownload));
+                    return string.Format(config.ProgressTextTemplate,
+                        config.Units.GetPresentableText(x.TotalProgress),
+                        config.Units.GetPresentableText(x.TotalBytesToDownload));
                 })
                 .ToPropertyOnMainThread(this, x => x.ProgressText);
 
@@ -210,12 +210,12 @@ namespace Hand2Note.ProgressView.ViewModel
                 {
                     if (Double.IsInfinity(x) || Double.IsNaN(x))
                     {
-                        return "?";
+                        return string.Format(config.RemainingTimeTextTemplate, "?");
                     }
 
                     var rounded = Math.Round(x);
                     var ts = TimeSpan.FromSeconds(rounded);
-                    return string.Format("Time remaining: {0:mm\\:ss}", ts);
+                    return string.Format(config.RemainingTimeTextTemplate, ts);
                 })
                 .Sample(TextRefreshRate)
                 .ToPropertyOnMainThread(this, x => x.RemainingTime);

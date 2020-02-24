@@ -6,33 +6,110 @@
                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                          
+                          xmlns:ui="clr-namespace:Hand2Note.ProgressView.UI"
+
                           mc:Ignorable="d"
                           d:DesignHeight="300" 
-                          d:DesignWidth="300">
-    <StackPanel Orientation="Vertical">
+                          d:DesignWidth="100">
+    <UserControl.Resources>
+        <Style x:Key="Light" TargetType="StackPanel">
+            <Style.Resources>
+                <Style TargetType="TextBlock" x:Key="SecondaryText">
+                    <Setter Property="Foreground" Value="Gray" />
+                </Style>
+                
+                <Style TargetType="TextBlock" x:Key="PrimaryText">
+                    <Setter Property="Foreground" Value="Black" />
+                </Style>
+                
+                <Style TargetType="Button">
+                    <Setter Property="Background" Value="white" />
+                    <Setter Property="ui:CornerRadiusSetter.CornerRadius" Value="4" />
+                </Style>
+                
+                <Style TargetType="ProgressBar">
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="Foreground" Value="#2FC30B" />
+                </Style>
+            </Style.Resources>
+        </Style>
         
-        <TextBlock x:Name="Caption">
+        <Style x:Key="Dark" TargetType="StackPanel">
+            <Style.Resources>
+                <Style TargetType="TextBlock" x:Key="SecondaryText">
+                    <Setter Property="Foreground" Value="#919191" />
+                </Style>
+                
+                <Style TargetType="TextBlock" x:Key="PrimaryText">
+                    <Setter Property="Foreground" Value="#F0F0F0" />
+                </Style>
+                
+                <Style TargetType="Button">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="ui:CornerRadiusSetter.CornerRadius" Value="4" />
+                </Style>
+                
+                <Style TargetType="ProgressBar">
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="Foreground" Value="Yellow" />
+                </Style>
+            </Style.Resources>
+        </Style>
+    </UserControl.Resources>
+    
+    <StackPanel Orientation="Vertical" Style="{StaticResource Dark}">
+        <TextBlock x:Name="Caption"
+                   HorizontalAlignment="Left"
+                   Margin="2 10 0 -3"
+                   Style="{DynamicResource PrimaryText}">
             Doing something
         </TextBlock>
             
-        <ProgressBar x:Name="Progress" 
-                     Minimum="0"/>
+        <ProgressBar x:Name="Progress"
+                     Minimum="0"
+                     MinHeight="4"
+                     Margin="0 10 0 4"/>
         
-        <TextBlock x:Name="ProgressText">
-            Done
-        </TextBlock>
+        <Grid Margin="2 -3 2 0"
+              HorizontalAlignment="Stretch"
+              MinHeight="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock x:Name="ProgressText"
+                       Style="{DynamicResource SecondaryText}"
+                       Grid.Column="0"
+                       FontSize="10.5">
+                Done
+            </TextBlock>
+            
+            <TextBlock x:Name="Speed"
+                       Style="{DynamicResource SecondaryText}"
+                       Grid.Column="1"
+                       FontSize="10.5">
+                Speed
+            </TextBlock>
+            
+            <TextBlock x:Name="RemainingTime"
+                       Style="{DynamicResource SecondaryText}"
+                       Grid.Column="2"
+                       HorizontalAlignment="Right"
+                       FontSize="10.5">
+                Time
+            </TextBlock>
+        </Grid>
         
-        <TextBlock x:Name="Speed">
-            Speed
-        </TextBlock>
-        
-        <TextBlock x:Name="RemainingTime">
-            Time
-        </TextBlock>
-        
-        <Button x:Name="ControlButton">
-            Do something
+        <Button x:Name="ControlButton"
+                Margin="0 3 10 0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                MinWidth="100"
+                MinHeight="20">
+                Do something
         </Button>
+        
     </StackPanel>
 </rxui:ReactiveUserControl>

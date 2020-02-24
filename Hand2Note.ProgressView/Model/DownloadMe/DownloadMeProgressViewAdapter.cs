@@ -1,7 +1,7 @@
 using System;
 using System.Reactive.Linq;
-using Hand2Note.ProgressView.Model.Progress;
 using Hand2Note.ProgressView.Util;
+using Hand2Note.ProgressView.ViewModel.Progress;
 
 namespace Hand2Note.ProgressView.Model.DownloadMe
 {
