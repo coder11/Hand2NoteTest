@@ -103,10 +103,13 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppBootstrapper.cs" />
-    <Compile Include="Model\DownloadMe.cs" />
-    <Compile Include="Model\DownloadMeService.cs" />
+    <Compile Include="Model\DownloadMe\DownloadMeFsm.cs" />
+    <Compile Include="Model\DownloadMe\DownloadMeState.cs" />
+    <Compile Include="Model\DownloadMe\DownloadMeStateType.cs" />
     <Compile Include="Model\FileDownloadService.cs" />
     <Compile Include="Model\Operations\Class1.cs" />
+    <Compile Include="ThirdParty\DownloadMe.cs" />
+    <Compile Include="Util\CollectionExtensions.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ProgressViewViewModel.cs" />
     <Compile Include="View\MainView.xaml.cs">

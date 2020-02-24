@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Hand2Note.ProgressView.Model
+namespace Hand2Note.ProgressView.ThirdParty
 {
     public class DownloadMe 
     {
@@ -17,6 +17,7 @@ namespace Hand2Note.ProgressView.Model
 
         private readonly int _averageSpeedBytesPerSec;
         private readonly Random _random = new Random(1126236);
+        // private readonly Random _random = new Random();
 
         public DownloadMe() {
             TotalBytesToDownload = _random.Next(30) * 1_000_000;

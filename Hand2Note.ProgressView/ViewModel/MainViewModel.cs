@@ -8,7 +8,7 @@ namespace Hand2Note.ProgressView.ViewModel
     {
         public MainViewModel()
         {
-            FileDownload = new ProgressViewModel(new DownloadMeService());
+            FileDownload = new ProgressViewModel();
         }
 
         [Reactive]
