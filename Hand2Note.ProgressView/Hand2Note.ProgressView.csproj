@@ -113,6 +113,7 @@
     <Compile Include="Model\Progress\IUnitInfo.cs" />
     <Compile Include="Model\Progress\ProgressNotification.cs" />
     <Compile Include="ThirdParty\DownloadMe.cs" />
+    <Compile Include="Util\ObservableHelpers.cs" />
     <Compile Include="Util\CollectionExtensions.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ProgressViewViewModel.cs" />
