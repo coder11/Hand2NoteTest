@@ -12,7 +12,7 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
 
         private DownloadMeState _state;
         
-        private Subject<DownloadMeState> _subject = new Subject<DownloadMeState>();
+        private readonly Subject<DownloadMeState> _subject = new Subject<DownloadMeState>();
 
         public static DownloadMeFsm Create()
         {

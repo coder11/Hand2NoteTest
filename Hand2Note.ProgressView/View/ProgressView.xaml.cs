@@ -17,18 +17,13 @@ namespace Hand2Note.ProgressView.View
                 ));
                 
                 disposable(this.OneWayBind(ViewModel,
-                    vm => vm.CommandButtonText,
-                    v => v.ControlButton.Content
+                    vm => vm.Progress,
+                    v => v.Progress.Value
                 ));
                 
                 disposable(this.OneWayBind(ViewModel,
                     vm => vm.ProgressMaxValue,
                     v => v.Progress.Maximum
-                ));
-                
-                disposable(this.OneWayBind(ViewModel,
-                    vm => vm.Progress,
-                    v => v.Progress.Value
                 ));
                 
                 disposable(this.OneWayBind(ViewModel,
@@ -42,13 +37,19 @@ namespace Hand2Note.ProgressView.View
                 ));
                 
                 disposable(this.OneWayBind(ViewModel,
-                    vm => vm.ProgressText,
-                    v => v.ProgressText.Text
+                    vm => vm.CommandButtonText,
+                    v => v.ControlButton.Content
                 ));
                 
                 disposable(this.OneWayBind(ViewModel,
                     vm => vm.ProgressText,
                     v => v.ProgressText.Text
+                ));
+                
+                disposable(this.OneWayBind(ViewModel,
+                    vm => vm.ProgressTextVisible,
+                    v => v.ProgressText.Visibility,
+                    vmToViewConverterOverride: new BooleanToVisibilityTypeConverter()
                 ));
                 
                 disposable(this.OneWayBind(ViewModel,
@@ -57,8 +58,20 @@ namespace Hand2Note.ProgressView.View
                 ));
                 
                 disposable(this.OneWayBind(ViewModel,
+                    vm => vm.RemainingTimeVisible,
+                    v => v.RemainingTime.Visibility,
+                    vmToViewConverterOverride: new BooleanToVisibilityTypeConverter()
+                ));
+                
+                disposable(this.OneWayBind(ViewModel,
                     vm => vm.Speed,
                     v => v.Speed.Text
+                ));
+                
+                disposable(this.OneWayBind(ViewModel,
+                    vm => vm.SpeedVisible,
+                    v => v.Speed.Visibility,
+                    vmToViewConverterOverride: new BooleanToVisibilityTypeConverter()
                 ));
             });
         }

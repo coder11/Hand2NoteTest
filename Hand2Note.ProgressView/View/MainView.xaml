@@ -11,7 +11,7 @@
                           d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <StackPanel>
-            <local:ProgressView x:Name="FileDownload" />
+            <local:ProgressView x:Name="DownloadMe" />
             
             <!--<view:ProgressView></view:ProgressView>
             <view:ProgressView></view:ProgressView>
