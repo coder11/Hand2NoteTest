@@ -70,9 +70,9 @@ namespace Hand2Note.ProgressView.ViewModel
 
             var progress = new DemoProgressOperation(250,
                 Enumerable.Range(0, 21)
-                    .Select(x => new ProgressNotification(x, 1, 20, $"Extracting HandHistory{x}.zip")));
+                    .Select(x => new ProgressNotification(x, 1, 20, $"Extracting HandHistory{x}.zip", true)));
             
-            DifferentUnits = new ProgressViewModel(progress.Notifications, config, progress.Start, progress.Start, progress.Pause, progress.Start);
+            DifferentUnits = new ProgressViewModel(progress.Notifications, config, progress.Start, progress.Start, progress.Pause, progress.Resume);
         }
     }
 }
