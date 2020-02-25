@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Windows;
@@ -20,29 +21,37 @@ using ReactiveUI.Fody.Helpers;
 
 namespace Hand2Note.ProgressView.ViewModel
 {
-    public class MainViewModel : ReactiveObject
+    public class MainViewModel : ReactiveObject, IActivatableViewModel
     {
         private readonly Style _lightTheme = (Style) Application.Current.Resources["Light"];
         private readonly Style _darkTheme = (Style) Application.Current.Resources["Dark"];
-        
+
         public MainViewModel()
         {
-            InitDownloadMeVm();
-            InitDifferentUnits();
-            InitCustomTexts();
-            InitOperationsChain();
-            InitDisableRestarts();
-            InitDisablePauses();
-            InitDisablePausesForIndividualStage();
-            InitExternallyControllled();
-            InitRealDownload();
-        
-            LightThemeChecked = true;
+            Activator = new ViewModelActivator();
             
+            LightThemeChecked = true;
+
             this.WhenAnyValue(x => x.LightThemeChecked)
                 .Select(x => x ? _lightTheme : _darkTheme)
                 .ToPropertyOnMainThread(this, x => x.Theme);
+            
+            this.WhenActivated(disposables =>
+            {
+                InitDownloadMeVm(disposables);
+                InitDifferentUnits(disposables);
+                InitCustomTexts(disposables);
+                InitOperationsChain(disposables);
+                InitDisableRestarts(disposables);
+                InitDisablePauses(disposables);
+                InitDisablePausesForIndividualStage(disposables);
+                InitExternallyControllled(disposables);
+                InitRealDownload(disposables);
+
+            });
         }
+        
+        public ViewModelActivator Activator { get; }
         
         public Style Theme { [ObservableAsProperty] get; }
 
@@ -56,9 +65,11 @@ namespace Hand2Note.ProgressView.ViewModel
         [Reactive]
         public ProgressViewModel DoDownloadMeVm { get; set; }
 
-        private void InitDownloadMeVm()
+        private void InitDownloadMeVm(CompositeDisposable disposables)
         {
-            var fsm = DownloadMeFsm.Create();
+            var fsm = DownloadMeFsm.Create()
+                .DisposeWith(disposables);
+            
             var notifications = DownloadMeProgressViewAdapter.FsmStatesToNotifications(fsm);
             var config = new ProgressViewModelConfig
             {
@@ -72,7 +83,7 @@ namespace Hand2Note.ProgressView.ViewModel
         [Reactive]
         public ProgressViewModel DifferentUnits { get; set; }
 
-        private void InitDifferentUnits()
+        private void InitDifferentUnits(CompositeDisposable disposables)
         {
             var config = new ProgressViewModelConfig
             {
@@ -83,6 +94,8 @@ namespace Hand2Note.ProgressView.ViewModel
             var progress = new DemoProgressOperation(250,
                 Enumerable.Range(0, 21)
                     .Select(x => new ProgressNotification(x, 1, 20, $"Extracting HandHistory{x}.zip", true)));
+
+            progress.DisposeWith(disposables);
             
             DifferentUnits = new ProgressViewModel(progress.Notifications, config, progress.Start, progress.Start, progress.Pause, progress.Resume);
         }
@@ -91,7 +104,7 @@ namespace Hand2Note.ProgressView.ViewModel
         [Reactive]
         public ProgressViewModel CustomTexts { get; set; }
 
-        private void InitCustomTexts()
+        private void InitCustomTexts(CompositeDisposable disposables)
         {
             var config = new ProgressViewModelConfig
             {
@@ -115,6 +128,8 @@ namespace Hand2Note.ProgressView.ViewModel
                 (new ProgressNotification(7, 1, 7, "Visiting Arstotzka!", true), 1100),
                 (new ProgressLessNotification("Home, sweet home!", true), 2000));
 
+            progress.DisposeWith(disposables);
+            
             progress.PausedCaption = "Relaxing...";
             progress.FinishedCaption = "Huh! We made it!";
             
@@ -126,9 +141,10 @@ namespace Hand2Note.ProgressView.ViewModel
         [Reactive]
         public ProgressViewModel OperationsChain { get; set; }
 
-        private void InitOperationsChain()
+        private void InitOperationsChain(CompositeDisposable disposables)
         {
             var progress = new DemoProgressOperation(GetOperationChainData().ToArray());
+            progress.DisposeWith(disposables);
             OperationsChain = new ProgressViewModel(progress.Notifications, new ProgressViewModelConfig(), start: progress.Start, pause: progress.Pause, resume:progress.Resume);
         }
 
@@ -155,9 +171,10 @@ namespace Hand2Note.ProgressView.ViewModel
         [Reactive]
         public ProgressViewModel DisableRestarts { get; set; }
 
-        private void InitDisableRestarts()
+        private void InitDisableRestarts(CompositeDisposable disposables)
         {
             var progress = NewSimpleProgress();
+            progress.DisposeWith(disposables);
             DisableRestarts = new ProgressViewModel(progress.Notifications, new ProgressViewModelConfig(), start: progress.Start, pause: progress.Pause, resume:progress.Resume);
         }
 
@@ -165,9 +182,10 @@ namespace Hand2Note.ProgressView.ViewModel
         [Reactive]
         public ProgressViewModel DisablePauses { get; set; }
 
-        private void InitDisablePauses()
+        private void InitDisablePauses(CompositeDisposable disposables)
         {
             var progress = NewSimpleProgress();
+            progress.DisposeWith(disposables);
             DisablePauses = new ProgressViewModel(progress.Notifications, new ProgressViewModelConfig(), start: progress.Start);
         }
         
@@ -175,7 +193,7 @@ namespace Hand2Note.ProgressView.ViewModel
         [Reactive]
         public ProgressViewModel DisablePausesForIndividualStage { get; set; }
         
-        private void InitDisablePausesForIndividualStage()
+        private void InitDisablePausesForIndividualStage(CompositeDisposable disposables)
         {
             IEnumerable<IProgressNotification> pausable = Enumerable.Range(0, 5)
                 .Select(x => new ProgressNotification(x, 1, 4, $"This can be paused", true));
@@ -194,6 +212,7 @@ namespace Hand2Note.ProgressView.ViewModel
                 .ToArray(); 
             
             var progress = new DemoProgressOperation(2000, all);
+            progress.DisposeWith(disposables);
             
             DisablePausesForIndividualStage = new ProgressViewModel(progress.Notifications, new ProgressViewModelConfig(), start: progress.Start, pause: progress.Pause, resume: progress.Resume);
         }
@@ -206,9 +225,10 @@ namespace Hand2Note.ProgressView.ViewModel
         [Reactive]
         public ProgressViewModel Follower2 { get; set; }
         
-        private void InitExternallyControllled()
+        private void InitExternallyControllled(CompositeDisposable disposables)
         {
-            var progress = NewSimpleProgress();
+            var progress = NewSimpleProgress()
+                .DisposeWith(disposables);
 
             var canExecute = this.WhenAnyObservable(x => x.StartTwoViews)
                 .Select(x => false)
@@ -235,9 +255,11 @@ namespace Hand2Note.ProgressView.ViewModel
 
         private const string url = "http://h2n-uptoyou.azureedge.net/main/Hand2NoteInstaller.exe";
         
-        private void InitRealDownload()
+        private void InitRealDownload(CompositeDisposable disposables)
         {
             var client = new WebClient();
+            client.DisposeWith(disposables);
+            
             Action run = () => client.DownloadFileTaskAsync(url, GetTempFile());
 
             var dlProgress = Observable.FromEventPattern<DownloadProgressChangedEventHandler, DownloadProgressChangedEventArgs>(

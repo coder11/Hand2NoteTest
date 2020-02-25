@@ -11,7 +11,7 @@ using ReactiveUI;
 
 namespace Hand2Note.ProgressView.Model
 {
-    public class DemoProgressOperation
+    public class DemoProgressOperation : IDisposable
     {
         private readonly (IProgressNotification, int)[] _notifications;
         private readonly Subject<IProgressNotification> _subject;
@@ -68,6 +68,12 @@ namespace Hand2Note.ProgressView.Model
         {
             _token.Cancel();
             _subject.OnNext(new PausedNotification(PausedCaption));
+        }
+
+        public void Dispose()
+        {
+            _subject?.Dispose();
+            _token?.Dispose();
         }
     }
 }

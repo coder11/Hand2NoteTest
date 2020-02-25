@@ -6,7 +6,7 @@ using ReactiveUI;
 
 namespace Hand2Note.ProgressView.Model.DownloadMe
 {
-    public class DownloadMeFsm
+    public class DownloadMeFsm : IDisposable
     {
         private readonly ThirdParty.DownloadMe _downloadMe;
 
@@ -207,6 +207,11 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
         private void ThrowInvalidStateTransition()
         {
             throw new InvalidOperationException("Invalid downloadMe state transition");
+        }
+
+        public void Dispose()
+        {
+            _subject?.Dispose();
         }
     }
 }
