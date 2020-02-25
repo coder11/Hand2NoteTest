@@ -39,6 +39,36 @@ namespace Hand2Note.ProgressView.View
                     vm => vm.CustomTexts,
                     v => v.CustomTexts.ViewModel
                 ));
+                
+                disposable(this.Bind(ViewModel,
+                    vm => vm.DisableRestarts,
+                    v => v.DisableRestarts.ViewModel
+                ));
+                
+                disposable(this.Bind(ViewModel,
+                    vm => vm.DisablePauses,
+                    v => v.DisablePauses.ViewModel
+                ));
+                
+                disposable(this.Bind(ViewModel,
+                    vm => vm.DisablePausesForIndividualStage,
+                    v => v.DisablePausesForIndividualStage.ViewModel
+                ));
+                
+                disposable(this.BindCommand(ViewModel,
+                    vm => vm.StartTwoViews,
+                    v => v.StartTwoViews.Command
+                ));
+                
+                disposable(this.Bind(ViewModel,
+                    vm => vm.Follower1,
+                    v => v.Follower1.ViewModel
+                ));
+                
+                disposable(this.Bind(ViewModel,
+                    vm => vm.Follower2,
+                    v => v.Follower2.ViewModel
+                ));
             });
         }
     }

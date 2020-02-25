@@ -110,6 +110,7 @@
     <Compile Include="Model\DownloadMe\DownloadMeStateType.cs" />
     <Compile Include="Model\FileDownloadService.cs" />
     <Compile Include="ThirdParty\DownloadMe.cs" />
+    <Compile Include="Util\ActionHelpers.cs" />
     <Compile Include="Util\ObservableHelpers.cs" />
     <Compile Include="Util\CollectionExtensions.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />

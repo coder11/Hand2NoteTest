@@ -54,6 +54,15 @@ namespace Hand2Note.ProgressView.ViewModel
         
         private void InitializeObservables(IObservable<IProgressNotification> notifications, ProgressViewModelConfig config, Action start, Action restart, Action pause, Action resume)
         {
+            var disableStart = start == null;
+            var disableRestart = restart == null;
+            var disablePause = pause == null || resume == null;
+
+            start ??= ActionHelpers.Empty;
+            restart ??= ActionHelpers.Empty;
+            pause ??= ActionHelpers.Empty;
+            resume ??= ActionHelpers.Empty;
+            
             notifications = notifications.StartWith(new BaseProgressNotification(
                 0,
                 null,
@@ -82,17 +91,18 @@ namespace Hand2Note.ProgressView.ViewModel
                 .StartWith(true);
                 
             var canStartExecute = wasNeverRun
+                .Select(x => x && !disableStart)
                 .ObserveOn(RxApp.MainThreadScheduler);
 
             var canRestartExecute = isRunning
-                .Select(x => !x)
+                .Select(x => !x && !disableRestart)
                 .ObserveOn(RxApp.MainThreadScheduler);
                 
 
-            var canPauseExecute = notifications.Select(x => x.AllowPause && pause != null)
+            var canPauseExecute = notifications.Select(x => x.AllowPause && !disablePause)
                 .ObserveOn(RxApp.MainThreadScheduler);
 
-            var canResumeExecute = notifications.Select(x => x.AllowResume && resume != null)
+            var canResumeExecute = notifications.Select(x => x.AllowResume && !disablePause)
                 .ObserveOn(RxApp.MainThreadScheduler);
 
             _startCommand = ReactiveCommand.Create(start, canStartExecute);

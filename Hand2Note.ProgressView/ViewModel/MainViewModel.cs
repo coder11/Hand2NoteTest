@@ -1,6 +1,7 @@
 // ReSharper disable UnassignedGetOnlyAutoProperty
 
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Runtime.Remoting.Messaging;
@@ -109,5 +110,19 @@ namespace Hand2Note.ProgressView.ViewModel
             
             CustomTexts = new ProgressViewModel(progress.Notifications, config, progress.Start, progress.Start, progress.Pause, progress.Resume);
         }
+        
+        [Reactive]
+        public ProgressViewModel DisableRestarts { get; set; }
+        [Reactive]
+        public ProgressViewModel DisablePauses { get; set; }
+        [Reactive]
+        public ProgressViewModel DisablePausesForIndividualStage { get; set; }
+        
+        [Reactive]
+        public ReactiveCommand<Unit, Unit> StartTwoViews { get; set; }
+        [Reactive]
+        public ProgressViewModel Follower1 { get; set; }
+        [Reactive]
+        public ProgressViewModel Follower2 { get; set; }
     }
 }
