@@ -1,15 +1,13 @@
 // ReSharper disable UnassignedGetOnlyAutoProperty
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing.Text;
+using System.ComponentModel;
 using System.Linq;
+using System.Net;
 using System.Reactive;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Runtime.Remoting.Messaging;
-using System.Threading.Tasks;
 using System.Windows;
 using Hand2Note.ProgressView.Model;
 using Hand2Note.ProgressView.Model.DownloadMe;
@@ -32,10 +30,12 @@ namespace Hand2Note.ProgressView.ViewModel
             InitDownloadMeVm();
             InitDifferentUnits();
             InitCustomTexts();
+            InitOperationsChain();
             InitDisableRestarts();
             InitDisablePauses();
             InitDisablePausesForIndividualStage();
             InitExternallyControllled();
+            InitRealDownload();
         
             LightThemeChecked = true;
             
@@ -122,6 +122,36 @@ namespace Hand2Note.ProgressView.ViewModel
         }
         
         
+                
+        [Reactive]
+        public ProgressViewModel OperationsChain { get; set; }
+
+        private void InitOperationsChain()
+        {
+            var progress = new DemoProgressOperation(GetOperationChainData().ToArray());
+            OperationsChain = new ProgressViewModel(progress.Notifications, new ProgressViewModelConfig(), start: progress.Start, pause: progress.Pause, resume:progress.Resume);
+        }
+
+        private IEnumerable<(IProgressNotification Notification, int TimeoutMs)> GetOperationChainData()
+        {
+            yield return (new ProgressLessNotification("Connecting", true), 2000);
+
+            for(int i = 0; i < 21; i++)
+            {
+                yield return (new ProgressNotification(i, 1, 20, "Downloading", true), 100);
+            }
+            
+            yield return (new ProgressLessNotification("Verifying", true), 2000);
+            
+            for(int i = 0; i < 21; i++)
+            {
+                yield return (new ProgressNotification(i, 1, 20, "Extracting", true), 100);
+            }
+            
+            yield return (new ProgressLessNotification("Installing", true), 2000);
+        }
+
+
         [Reactive]
         public ProgressViewModel DisableRestarts { get; set; }
 
@@ -197,6 +227,52 @@ namespace Hand2Note.ProgressView.ViewModel
             return new DemoProgressOperation(250,
                 Enumerable.Range(0, 21)
                     .Select(x => new ProgressNotification(x, 1, 20, $"Doing work", true)));
+        }
+        
+        
+        [Reactive]
+        public ProgressViewModel RealDownload { get; set; }
+
+        private const string url = "http://h2n-uptoyou.azureedge.net/main/Hand2NoteInstaller.exe";
+        
+        private void InitRealDownload()
+        {
+            var client = new WebClient();
+            Action run = () => client.DownloadFileTaskAsync(url, GetTempFile());
+
+            var dlProgress = Observable.FromEventPattern<DownloadProgressChangedEventHandler, DownloadProgressChangedEventArgs>(
+                x => client.DownloadProgressChanged += x,
+                x => client.DownloadProgressChanged -= x,
+                RxApp.TaskpoolScheduler);
+
+            var finished = Observable.FromEventPattern<AsyncCompletedEventHandler, AsyncCompletedEventArgs>(
+                x => client.DownloadFileCompleted += x,
+                x => client.DownloadFileCompleted -= x,
+                RxApp.TaskpoolScheduler);
+
+            var notifications = dlProgress
+                .Select(x => new
+                {
+                    Progress = (int) x.EventArgs.BytesReceived,
+                    ProgressMaxValue = (int) x.EventArgs.TotalBytesToReceive,
+                    Increment = 0,
+                })
+                .Scan(new {Progress = 0, ProgressMaxValue = 1, Increment = 0},
+                    (acc, cur) => new
+                    {
+                        cur.Progress,
+                        cur.ProgressMaxValue, 
+                        Increment = cur.Progress - acc.Progress
+                    })
+                .Select(x => new ProgressNotification(x.Progress, x.Increment, x.ProgressMaxValue, "Downloading",false))
+                .Merge<IProgressNotification>(finished.Select(x => new FinishedNotification("Finished")));
+            
+            RealDownload = new ProgressViewModel(notifications, new ProgressViewModelConfig { Units = new BytesUnitInfo() }, start: run);
+        }
+        
+        private string GetTempFile()
+        {
+            return System.IO.Path.GetTempPath() + Guid.NewGuid();
         }
     }
 }

@@ -108,7 +108,6 @@
     <Compile Include="Model\DownloadMe\DownloadMeProgressViewAdapter.cs" />
     <Compile Include="Model\DownloadMe\DownloadMeState.cs" />
     <Compile Include="Model\DownloadMe\DownloadMeStateType.cs" />
-    <Compile Include="Model\FileDownloadService.cs" />
     <Compile Include="ThirdParty\DownloadMe.cs" />
     <Compile Include="Util\ActionHelpers.cs" />
     <Compile Include="Util\ObservableHelpers.cs" />

@@ -41,6 +41,11 @@ namespace Hand2Note.ProgressView.View
                 ));
                 
                 disposable(this.Bind(ViewModel,
+                    vm => vm.OperationsChain,
+                    v => v.OperationsChain.ViewModel
+                ));
+                
+                disposable(this.Bind(ViewModel,
                     vm => vm.DisableRestarts,
                     v => v.DisableRestarts.ViewModel
                 ));
@@ -69,6 +74,12 @@ namespace Hand2Note.ProgressView.View
                     vm => vm.Follower2,
                     v => v.Follower2.ViewModel
                 ));
+                
+                disposable(this.Bind(ViewModel,
+                    vm => vm.RealDownload,
+                    v => v.RealDownload.ViewModel
+                ));
+
             });
         }
     }
