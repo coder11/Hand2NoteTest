@@ -67,7 +67,7 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
                         hasFinished,
                         allowPause,
                         allowResume,
-                        false,
+                        hideRemainingTime,
                         false,
                         hideRemainingTime,
                         isProgressless,

@@ -16,8 +16,8 @@ namespace Hand2Note.ProgressView.ThirdParty
         public int TotalBytesToDownload {get; }
 
         private readonly int _averageSpeedBytesPerSec;
-        private readonly Random _random = new Random(1126236);
-        // private readonly Random _random = new Random();
+        // private readonly Random _random = new Random(1126236);
+        private readonly Random _random = new Random();
 
         public DownloadMe() {
             TotalBytesToDownload = _random.Next(30) * 1_000_000;
