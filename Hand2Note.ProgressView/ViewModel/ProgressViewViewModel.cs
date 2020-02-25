@@ -4,8 +4,10 @@ using System;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Runtime.Remoting.Messaging;
 using Hand2Note.ProgressView.Util;
 using Hand2Note.ProgressView.ViewModel.Progress;
+using Hand2Note.ProgressView.ViewModel.Progress.Notifications;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -31,6 +33,8 @@ namespace Hand2Note.ProgressView.ViewModel
         public int ProgressMaxValue { [ObservableAsProperty] get; }
 
         public int Progress { [ObservableAsProperty] get; }
+        
+        public int ProgressVisible { [ObservableAsProperty] get; }
         
         public bool DisplayAsProgressLess { [ObservableAsProperty] get; }
 
@@ -62,19 +66,6 @@ namespace Hand2Note.ProgressView.ViewModel
             restart ??= ActionHelpers.Empty;
             pause ??= ActionHelpers.Empty;
             resume ??= ActionHelpers.Empty;
-            
-            notifications = notifications.StartWith(new BaseProgressNotification(
-                0,
-                null,
-                1,
-                false,
-                false,
-                false,
-                true,
-                true,
-                true,
-                false,
-                string.Empty));
 
             var startCommandFired = this.WhenAnyObservable(x => x._startCommand, x => x._restartCommand)
                 .Select(_ => true);
@@ -82,13 +73,24 @@ namespace Hand2Note.ProgressView.ViewModel
             var isRunning = startCommandFired
                 .Select(x => true)
                 .Merge(notifications
-                    .Where(x => x.HasFinished)
+                    .OfType<FinishedNotification>()
                     .Select(x => false))
-                .StartWith(false);
+                .StartWith(false)
+                .DistinctUntilChanged();
+
+            var canResume = notifications
+                .Select(x => x is PausedNotification)
+                .StartWith(false)
+                .DistinctUntilChanged();
+            
+            var allowPause = notifications.Select(x => x.AllowPause)
+                .StartWith(false)
+                .DistinctUntilChanged();
 
             var wasNeverRun = startCommandFired
                 .Select(x => false)
-                .StartWith(true);
+                .StartWith(true)
+                .DistinctUntilChanged();
                 
             var canStartExecute = wasNeverRun
                 .Select(x => x && !disableStart)
@@ -97,12 +99,11 @@ namespace Hand2Note.ProgressView.ViewModel
             var canRestartExecute = isRunning
                 .Select(x => !x && !disableRestart)
                 .ObserveOn(RxApp.MainThreadScheduler);
-                
 
-            var canPauseExecute = notifications.Select(x => x.AllowPause && !disablePause)
+            var canPauseExecute = allowPause.Select(x => x && !disablePause)
                 .ObserveOn(RxApp.MainThreadScheduler);
 
-            var canResumeExecute = notifications.Select(x => x.AllowResume && !disablePause)
+            var canResumeExecute = canResume.Select(x => x && !disablePause)
                 .ObserveOn(RxApp.MainThreadScheduler);
 
             _startCommand = ReactiveCommand.Create(start, canStartExecute);
@@ -111,8 +112,8 @@ namespace Hand2Note.ProgressView.ViewModel
             _resumeCommand = ReactiveCommand.Create(resume, canResumeExecute);
 
             var currentlyAvailableCommand =
-                Observable.CombineLatest(notifications, isRunning, wasNeverRun,
-                    (stateInfo, isRunning_, wasNeverRun_) =>
+                Observable.CombineLatest(allowPause, isRunning, wasNeverRun, canResume,
+                    (allowPause_, isRunning_, wasNeverRun_, canResume_) =>
                     {
                         if (wasNeverRun_)
                             return new
@@ -128,14 +129,14 @@ namespace Hand2Note.ProgressView.ViewModel
                                 Caption = config.RestartButtonText
                             };
 
-                        if (stateInfo.AllowPause)
+                        if (allowPause_)
                             return new
                             {
                                 Command = _pauseCommand,
                                 Caption = config.PauseButtonText
                             };
                         
-                        if (stateInfo.AllowResume)
+                        if (canResume_)
                             return new
                             {
                                 Command = _resumeCommand,
@@ -153,34 +154,43 @@ namespace Hand2Note.ProgressView.ViewModel
             currentlyAvailableCommand
                 .Where(x => x != null)
                 .Select(x => x.Caption)
-                .ToPropertyOnMainThread(this, x => x.CommandButtonText, config.StartButtonText);
+                .ToPropertyOnMainThread(this, x => x.CommandButtonText);
 
             notifications.Select(x => x.Caption)
                 .ToPropertyOnMainThread(this, x => x.Caption);
 
-            notifications.Select(x => x.Progress)
+            var progressNotifications = notifications.OfType<ProgressNotification>();
+            
+            progressNotifications.Select(x => x.Progress)
                 .ToPropertyOnMainThread(this, x => x.Progress);
 
-            notifications.Select(x => x.ProgressMaxValue)
-                .ToPropertyOnMainThread(this, x => x.ProgressMaxValue);
+            var progressValueChangeNotifications = Observable.Merge(progressNotifications
+                    .Select(x => new
+                    {
+                        x.Progress,
+                        x.ProgressMaxValue
+                    }),
+                notifications.OfType<ProgressInitNotification>()
+                    .Select(x => new
+                    {
+                        x.Progress,
+                        x.ProgressMaxValue
+                    }));
+            ;
+            
+            progressValueChangeNotifications
+                .Select(x => x.ProgressMaxValue)
+                .ToPropertyOnMainThread(this, x => x.ProgressMaxValue, 1);
 
-            notifications.Select(x => x.DisplayAsProgressLess)
+            notifications
+                .Select(x => x is ProgressLessNotification)
                 .ToPropertyOnMainThread(this, x => x.DisplayAsProgressLess);
 
-            var consecutiveProgressNotifications = notifications
-                .Where(x => !x.DisplayAsProgressLess && x.ProgressIncrement.HasValue)
-                .Select(x => new
-                {
-                    x.ProgressIncrement.Value,
-                    x.Progress,
-                    x.ProgressMaxValue
-                });
-
-            var speed = consecutiveProgressNotifications
+            var speed = progressNotifications
                 .Buffer(SpeedDelta)
-                .Select(x => x.Sum(y => y.Value) / SpeedDeltaSecs);
+                .Select(x => x.Sum(y => y.ProgressIncrement) / SpeedDeltaSecs);
 
-            var remaining = consecutiveProgressNotifications
+            var remaining = progressNotifications
                 .Select(x => x.ProgressMaxValue - x.Progress);
 
             var remainingTime = Observable.CombineLatest(
@@ -202,7 +212,7 @@ namespace Hand2Note.ProgressView.ViewModel
                 })
                 .ToPropertyOnMainThread(this, x => x.Speed);
 
-            consecutiveProgressNotifications
+            progressValueChangeNotifications
                 .Select(x =>
                 {
                     return string.Format(config.ProgressTextTemplate,
@@ -228,17 +238,20 @@ namespace Hand2Note.ProgressView.ViewModel
                 .Sample(TextRefreshRate)
                 .ToPropertyOnMainThread(this, x => x.RemainingTime);
 
-            notifications
-                .Select(x => !x.HideSpeed)
+            var showSpeed = notifications
+                .Select(x => x is ProgressNotification);
+            
+            showSpeed
                 .ToPropertyOnMainThread(this, x => x.SpeedVisible);
-
-            notifications
-                .Select(x => !x.HideProgressText)
-                .ToPropertyOnMainThread(this, x => x.ProgressTextVisible);
-
-            notifications
-                .Select(x => !x.HideRemainingTime)
+            
+            showSpeed
                 .ToPropertyOnMainThread(this, x => x.RemainingTimeVisible);
+
+            progressValueChangeNotifications
+                .Select(x => true)
+                .StartWith(false)
+                .DistinctUntilChanged()
+                .ToPropertyOnMainThread(this, x => x.ProgressTextVisible);
         }
     }
 }

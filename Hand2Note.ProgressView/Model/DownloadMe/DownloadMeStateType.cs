@@ -5,6 +5,7 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
         Invalid = 0,
         Initial = 1,
         Connecting = 2,
+        Connected = 9,
         Downloading = 3,
         Pausing = 4,
         Paused = 5,

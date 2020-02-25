@@ -1,7 +1,7 @@
 using System;
 using System.Reactive.Linq;
-using Hand2Note.ProgressView.Util;
 using Hand2Note.ProgressView.ViewModel.Progress;
+using Hand2Note.ProgressView.ViewModel.Progress.Notifications;
 
 namespace Hand2Note.ProgressView.Model.DownloadMe
 {
@@ -11,67 +11,45 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
         private const string Downloading = "Downloading";
         private const string Finishing = "Finishing";
         private const string Paused = "Paused";
+        private const string Pausing = "Pausing";
         private const string Finished = "Finished";
         
-        public static IObservable<BaseProgressNotification> FsmStatesToNotifications(DownloadMeFsm fsm)
+        public static IObservable<IProgressNotification> FsmStatesToNotifications(DownloadMeFsm fsm)
         {
             var stateInfos = fsm.States
-                .Select(x =>
+                .Select<DownloadMeState, IProgressNotification>(x =>
                 {
-                    var isProgressless = x.State.In(
-                        DownloadMeStateType.Connecting,
-                        DownloadMeStateType.Finishing,
-                        DownloadMeStateType.Pausing,
-                        DownloadMeStateType.Starting);
-
-                    string caption = string.Empty;
                     switch (x.State)
                     {
+                        case DownloadMeStateType.Initial:
                         case DownloadMeStateType.Starting:
+                            return new ProgressInitNotification(0, fsm.TotalBytesToDownload);
+                        
                         case DownloadMeStateType.Connecting:
-                            caption = Connecting;
-                            break;
-
+                            return new ProgressLessNotification(Connecting, true);
+                        
+                        case DownloadMeStateType.Connected:
+                            return new ProgressNotification(x.Progress, 0, fsm.TotalBytesToDownload, Downloading, true);
+                        
                         case DownloadMeStateType.Downloading:
-                            caption = Downloading;
-                            break;
-
-                        case DownloadMeStateType.Finishing:
-                            caption = Finishing;
-                            break;
-
+                            return new ProgressNotification(x.Progress, x.ProgressIncrement!.Value, fsm.TotalBytesToDownload, Downloading, true);
+                        
+                        case DownloadMeStateType.Pausing:
+                            return new ProgressLessNotification(Pausing, false);
+                        
                         case DownloadMeStateType.Paused:
-                            caption = Paused;
-                            break;
-
+                            return new PausedNotification(Paused);
+                        
+                        
+                        case DownloadMeStateType.Finishing:
+                            return new ProgressLessNotification(Finishing, true);
+                        
                         case DownloadMeStateType.Finished:
-                            caption = Finished;
-                            break;
+                            return new FinishedNotification(Finished);
+                        
+                        default:
+                            throw new ArgumentException();
                     }
-
-                    bool allowPause = x.State.In(
-                        DownloadMeStateType.Connecting,
-                        DownloadMeStateType.Downloading,
-                        DownloadMeStateType.Finishing);
-
-                    bool hasFinished = x.State == DownloadMeStateType.Finished;
-
-                    bool allowResume = x.State == DownloadMeStateType.Paused;
-
-                    bool hideRemainingTime = x.State != DownloadMeStateType.Downloading;
-                    
-                    return new BaseProgressNotification(
-                        x.Progress,
-                        x.ProgressIncrement,
-                        fsm.TotalBytesToDownload,
-                        hasFinished,
-                        allowPause,
-                        allowResume,
-                        hideRemainingTime,
-                        false,
-                        hideRemainingTime,
-                        isProgressless,
-                        caption);
                 });
 
             return stateInfos;

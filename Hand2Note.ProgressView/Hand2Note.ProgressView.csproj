@@ -117,8 +117,11 @@
     <Compile Include="ViewModel\ProgressViewViewModel.cs" />
     <Compile Include="ViewModel\Progress\IProgressNotification.cs" />
     <Compile Include="ViewModel\Progress\IUnitInfo.cs" />
-    <Compile Include="ViewModel\Progress\BaseProgressNotification.cs" />
-    <Compile Include="ViewModel\Progress\ProgressNotification.cs" />
+    <Compile Include="ViewModel\Progress\Notifications\FinishedNotification.cs" />
+    <Compile Include="ViewModel\Progress\Notifications\PausedNotification.cs" />
+    <Compile Include="ViewModel\Progress\Notifications\ProgressInitNotification.cs" />
+    <Compile Include="ViewModel\Progress\Notifications\ProgressLessNotification.cs" />
+    <Compile Include="ViewModel\Progress\Notifications\ProgressNotification.cs" />
     <Compile Include="ViewModel\Progress\ProgressViewModelConfig.cs" />
     <Compile Include="ViewModel\Progress\Units\BareUnitInfo.cs" />
     <Compile Include="ViewModel\Progress\Units\BytesUnitInfo.cs" />

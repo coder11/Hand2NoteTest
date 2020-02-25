@@ -15,6 +15,7 @@ using Hand2Note.ProgressView.Model;
 using Hand2Note.ProgressView.Model.DownloadMe;
 using Hand2Note.ProgressView.Util;
 using Hand2Note.ProgressView.ViewModel.Progress;
+using Hand2Note.ProgressView.ViewModel.Progress.Notifications;
 using Hand2Note.ProgressView.ViewModel.Progress.Units;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

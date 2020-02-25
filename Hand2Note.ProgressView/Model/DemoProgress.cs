@@ -6,6 +6,7 @@ using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using Hand2Note.ProgressView.ViewModel.Progress;
+using Hand2Note.ProgressView.ViewModel.Progress.Notifications;
 using ReactiveUI;
 
 namespace Hand2Note.ProgressView.Model
@@ -57,7 +58,7 @@ namespace Hand2Note.ProgressView.Model
 
                 if (!_token.IsCancellationRequested)
                 {
-                    _subject.OnNext(new FinishNotification(0, FinishedCaption));
+                    _subject.OnNext(new FinishedNotification(FinishedCaption));
                 }
                 
             }, _token.Token);
@@ -66,7 +67,7 @@ namespace Hand2Note.ProgressView.Model
         public void Pause()
         {
             _token.Cancel();
-            _subject.OnNext(new PausedNotification(0, 0, PausedCaption));
+            _subject.OnNext(new PausedNotification(PausedCaption));
         }
     }
 }

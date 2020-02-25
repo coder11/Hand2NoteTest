@@ -124,8 +124,9 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
         {
             switch (_state.State)
             {
-                case  DownloadMeStateType.Connecting:
-                    ChangeState(_state.UpdateType(DownloadMeStateType.Downloading));
+                case  DownloadMeStateType.Connected:
+                    ChangeState(_state.UpdateType(DownloadMeStateType.Downloading)
+                        .UpdateProgress(bytesAmount));
                     break;
                     
                 case DownloadMeStateType.Downloading:
@@ -191,7 +192,7 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
             switch (_state.State)
             {
                 case DownloadMeStateType.Connecting:
-                    ChangeState(_state.UpdateType(DownloadMeStateType.Downloading));
+                    ChangeState(_state.UpdateType(DownloadMeStateType.Connected));
                     break;
                 
                 case DownloadMeStateType.Pausing:
