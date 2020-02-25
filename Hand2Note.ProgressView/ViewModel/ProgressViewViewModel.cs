@@ -13,8 +13,8 @@ namespace Hand2Note.ProgressView.ViewModel
 {
     public class ProgressViewModel : ReactiveObject
     {
-        const double SpeedDeltaSecs = 1;
-        private readonly TimeSpan SpeedDelta = TimeSpan.FromSeconds(SpeedDeltaSecs);
+        private const double SpeedDeltaSecs = 1;
+        private TimeSpan SpeedDelta => TimeSpan.FromSeconds(SpeedDeltaSecs);
 
         private readonly TimeSpan TextRefreshRate = TimeSpan.FromSeconds(1);
         

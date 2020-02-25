@@ -34,6 +34,11 @@ namespace Hand2Note.ProgressView.View
                     vm => vm.DifferentUnits,
                     v => v.DifferentUnits.ViewModel
                 ));
+                
+                disposable(this.Bind(ViewModel,
+                    vm => vm.CustomTexts,
+                    v => v.CustomTexts.ViewModel
+                ));
             });
         }
     }

@@ -53,6 +53,12 @@
                                     HorizontalAlignment="Stretch" />
                 
                 
+                <TextBlock Style="{DynamicResource HeaderText}" 
+                           Text="Everything is highly customizable" 
+                           Margin="10 20 -5 0"/>
+                
+                <local:ProgressView x:Name="CustomTexts"
+                                    HorizontalAlignment="Stretch" />
                 
             </StackPanel>
         </Grid>

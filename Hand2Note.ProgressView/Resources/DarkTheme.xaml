@@ -29,6 +29,7 @@
                                         Background="Transparent">
                                     <ContentPresenter HorizontalAlignment="Center"
                                                       VerticalAlignment="Center"
+                                                      Margin="4 0"
                                                       TextElement.Foreground="#F0F0F0">
                                     </ContentPresenter>
                                 </Border>

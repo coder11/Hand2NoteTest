@@ -17,6 +17,24 @@ namespace Hand2Note.ProgressView.ViewModel.Progress
         {
         }
     }
+
+    public class ProgressLessNotification : BaseProgressNotification
+    {
+        public ProgressLessNotification(string caption, bool allowPause) 
+            : base(0, 
+                null, 
+                0, 
+                false, 
+                allowPause, 
+                false, 
+                true, 
+                false, 
+                true, 
+                true, 
+                caption)
+        {
+        }
+    }
     
     public class FinishNotification : BaseProgressNotification
     {
@@ -28,7 +46,7 @@ namespace Hand2Note.ProgressView.ViewModel.Progress
     
     public class PausedNotification : BaseProgressNotification
     {
-        public PausedNotification(int progress, int progressMaxValue, string caption = "Paused") 
+        public PausedNotification(int progress, int progressMaxValue, string caption) 
             : base(progress, 
                 null, 
                 progressMaxValue, 
