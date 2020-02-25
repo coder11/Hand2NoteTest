@@ -158,26 +158,12 @@ namespace Hand2Note.ProgressView.ViewModel
                 .ToPropertyOnMainThread(this, x => x.DisplayAsProgressless);
 
             var consecutiveProgressNotifications = notifications
-                .Select(x => new
-                {
-                    IsProgressless = x.DisplayAsProgressLess,
-                    x.ProgressIncrement,
-                    TotalProgress = x.Progress,
-                    TotalBytesToDownload = x.ProgressMaxValue
-                })
-                .Scan(new
-                {
-                    IsProgressless = true,
-                    ProgressIncrement = (int?) null,
-                    TotalProgress = 0,
-                    TotalBytesToDownload = 0,
-                }, (acc, cur) => { return cur; })
-                .Where(x => !x.IsProgressless && x.ProgressIncrement.HasValue)
+                .Where(x => !x.DisplayAsProgressLess && x.ProgressIncrement.HasValue)
                 .Select(x => new
                 {
                     x.ProgressIncrement.Value,
-                    x.TotalProgress,
-                    x.TotalBytesToDownload
+                    x.Progress,
+                    x.ProgressMaxValue
                 });
 
             var speed = consecutiveProgressNotifications
@@ -185,7 +171,7 @@ namespace Hand2Note.ProgressView.ViewModel
                 .Select(x => x.Sum(y => y.Value) / SpeedDeltaSecs);
 
             var remaining = consecutiveProgressNotifications
-                .Select(x => x.TotalBytesToDownload - x.TotalProgress);
+                .Select(x => x.ProgressMaxValue - x.Progress);
 
             var remainingTime = Observable.CombineLatest(
                 remaining,
@@ -210,8 +196,8 @@ namespace Hand2Note.ProgressView.ViewModel
                 .Select(x =>
                 {
                     return string.Format(config.ProgressTextTemplate,
-                        config.Units.GetPresentableText(x.TotalProgress),
-                        config.Units.GetPresentableText(x.TotalBytesToDownload));
+                        config.Units.GetPresentableText(x.Progress),
+                        config.Units.GetPresentableText(x.ProgressMaxValue));
                 })
                 .ToPropertyOnMainThread(this, x => x.ProgressText);
 
