@@ -2,6 +2,7 @@ using System;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using ReactiveUI;
 
 namespace Hand2Note.ProgressView.Model.DownloadMe
@@ -16,14 +17,12 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
 
         public static DownloadMeFsm Create()
         {
-            var result = new DownloadMeFsm(new ThirdParty.DownloadMe());
-            result._state = new DownloadMeState(
+            var initialState = new DownloadMeState(
                 DownloadMeStateType.Initial,
                 0,
                 null,
-                new CancellationTokenSource());
-
-            return result;
+                new CancellationTokenSource()); 
+            return new DownloadMeFsm(new ThirdParty.DownloadMe(), initialState);
         }
         
         public IObservable<DownloadMeState> States => _subject;
@@ -88,9 +87,10 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
             }
         }
         
-        private DownloadMeFsm(ThirdParty.DownloadMe downloadMe)
+        private DownloadMeFsm(ThirdParty.DownloadMe downloadMe, DownloadMeState state)
         {
             _downloadMe = downloadMe;
+            _state = state;
 
             _downloadMe.Connected += OnConnected;
             _downloadMe.Connecting += OnConnecting;

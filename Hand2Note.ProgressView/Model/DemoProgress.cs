@@ -17,7 +17,7 @@ namespace Hand2Note.ProgressView.Model
         private readonly Subject<IProgressNotification> _subject;
         
         private int _i = 0;
-        private CancellationTokenSource _token;
+        private CancellationTokenSource? _token;
         
         public DemoProgressOperation(int timeoutMs, IEnumerable<IProgressNotification> notifications)
         {
@@ -66,7 +66,7 @@ namespace Hand2Note.ProgressView.Model
 
         public void Pause()
         {
-            _token.Cancel();
+            _token?.Cancel();
             _subject.OnNext(new PausedNotification(PausedCaption));
         }
 

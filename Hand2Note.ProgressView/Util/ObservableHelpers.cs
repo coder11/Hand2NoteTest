@@ -18,7 +18,7 @@ namespace Hand2Note.ProgressView.Util
             return item.ToPropertyEx(source, property, initialValue, deferSubscription, RxApp.MainThreadScheduler);
         }
         
-        public static IObservable<TResult> OfType<TResult, TSource>(this IObservable<TSource> item) where TResult : class
+        public static IObservable<TResult?> OfType<TResult, TSource>(this IObservable<TSource> item) where TResult : class
         {
             return item
                 .Select(x => x as TResult)

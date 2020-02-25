@@ -6,7 +6,6 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Runtime.Remoting.Messaging;
 using Hand2Note.ProgressView.Util;
 using Hand2Note.ProgressView.ViewModel.Progress;
 using Hand2Note.ProgressView.ViewModel.Progress.Notifications;
@@ -22,12 +21,17 @@ namespace Hand2Note.ProgressView.ViewModel
 
         private readonly TimeSpan TextRefreshRate = TimeSpan.FromSeconds(1);
         
-        private ReactiveCommand<Unit, Unit> _startCommand;
-        private ReactiveCommand<Unit, Unit> _restartCommand;
-        private ReactiveCommand<Unit, Unit> _pauseCommand;
-        private ReactiveCommand<Unit, Unit> _resumeCommand;
+        private ReactiveCommand<Unit, Unit>? _startCommand;
+        private ReactiveCommand<Unit, Unit>? _restartCommand;
+        private ReactiveCommand<Unit, Unit>? _pauseCommand;
+        private ReactiveCommand<Unit, Unit>? _resumeCommand;
         
-        public ProgressViewModel(IObservable<IProgressNotification> notifications, ProgressViewModelConfig config, Action start = null, Action restart = null, Action pause = null, Action resume = null)
+        public ProgressViewModel(IObservable<IProgressNotification> notifications, 
+            ProgressViewModelConfig config, 
+            Action? start = null, 
+            Action? restart = null,
+            Action? pause = null, 
+            Action? resume = null)
         {
             Activator = new ViewModelActivator();
             this.WhenActivated(disposables =>
@@ -44,25 +48,31 @@ namespace Hand2Note.ProgressView.ViewModel
         
         public bool DisplayAsProgressLess { [ObservableAsProperty] get; }
 
-        public string Speed { [ObservableAsProperty] get; }
+        public string? Speed { [ObservableAsProperty] get; }
         
         public bool SpeedVisible { [ObservableAsProperty] get; }
         
-        public string ProgressText { [ObservableAsProperty] get; }
+        public string? ProgressText { [ObservableAsProperty] get; }
         
         public bool ProgressTextVisible { [ObservableAsProperty] get; }
         
-        public string RemainingTime { [ObservableAsProperty] get; }
+        public string? RemainingTime { [ObservableAsProperty] get; }
         
         public bool RemainingTimeVisible { [ObservableAsProperty] get; }
         
-        public string CommandButtonText { [ObservableAsProperty] get; }
+        public string? CommandButtonText { [ObservableAsProperty] get; }
 
-        public string Caption { [ObservableAsProperty] get; }
+        public string? Caption { [ObservableAsProperty] get; }
 
-        public ReactiveCommand<Unit, Unit> Command { [ObservableAsProperty] get; }
+        public ReactiveCommand<Unit, Unit>? Command { [ObservableAsProperty] get; }
         
-        private void InitializeObservables(CompositeDisposable disposables, IObservable<IProgressNotification> notifications, ProgressViewModelConfig config, Action start, Action restart, Action pause, Action resume)
+        private void InitializeObservables(CompositeDisposable disposables, 
+            IObservable<IProgressNotification> notifications,
+            ProgressViewModelConfig config,
+            Action? start, 
+            Action? restart,
+            Action? pause,
+            Action? resume)
         {
             var disableStart = start == null;
             var disableRestart = restart == null;
@@ -168,12 +178,12 @@ namespace Hand2Note.ProgressView.ViewModel
 
             currentlyAvailableCommand
                 .Where(x => x != null)
-                .Select(x => x.Command)
+                .Select(x => x!.Command)
                 .ToPropertyOnMainThread(this, x => x.Command);
 
             currentlyAvailableCommand
                 .Where(x => x != null)
-                .Select(x => x.Caption)
+                .Select(x => x!.Caption)
                 .ToPropertyOnMainThread(this, x => x.CommandButtonText);
 
             notifications.Select(x => x.Caption)

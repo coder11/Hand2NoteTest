@@ -53,7 +53,7 @@ namespace Hand2Note.ProgressView.ViewModel
         
         public ViewModelActivator Activator { get; }
         
-        public Style Theme { [ObservableAsProperty] get; }
+        public Style? Theme { [ObservableAsProperty] get; }
 
         [Reactive]
         public bool LightThemeChecked { get; set; }
@@ -63,7 +63,7 @@ namespace Hand2Note.ProgressView.ViewModel
         
         
         [Reactive]
-        public ProgressViewModel DoDownloadMeVm { get; set; }
+        public ProgressViewModel? DoDownloadMeVm { get; set; }
 
         private void InitDownloadMeVm(CompositeDisposable disposables)
         {
@@ -81,7 +81,7 @@ namespace Hand2Note.ProgressView.ViewModel
         }
         
         [Reactive]
-        public ProgressViewModel DifferentUnits { get; set; }
+        public ProgressViewModel? DifferentUnits { get; set; }
 
         private void InitDifferentUnits(CompositeDisposable disposables)
         {
@@ -102,7 +102,7 @@ namespace Hand2Note.ProgressView.ViewModel
         
                 
         [Reactive]
-        public ProgressViewModel CustomTexts { get; set; }
+        public ProgressViewModel? CustomTexts { get; set; }
 
         private void InitCustomTexts(CompositeDisposable disposables)
         {
@@ -139,7 +139,7 @@ namespace Hand2Note.ProgressView.ViewModel
         
                 
         [Reactive]
-        public ProgressViewModel OperationsChain { get; set; }
+        public ProgressViewModel? OperationsChain { get; set; }
 
         private void InitOperationsChain(CompositeDisposable disposables)
         {
@@ -169,7 +169,7 @@ namespace Hand2Note.ProgressView.ViewModel
 
 
         [Reactive]
-        public ProgressViewModel DisableRestarts { get; set; }
+        public ProgressViewModel? DisableRestarts { get; set; }
 
         private void InitDisableRestarts(CompositeDisposable disposables)
         {
@@ -180,7 +180,7 @@ namespace Hand2Note.ProgressView.ViewModel
 
         
         [Reactive]
-        public ProgressViewModel DisablePauses { get; set; }
+        public ProgressViewModel? DisablePauses { get; set; }
 
         private void InitDisablePauses(CompositeDisposable disposables)
         {
@@ -191,7 +191,7 @@ namespace Hand2Note.ProgressView.ViewModel
         
         
         [Reactive]
-        public ProgressViewModel DisablePausesForIndividualStage { get; set; }
+        public ProgressViewModel? DisablePausesForIndividualStage { get; set; }
         
         private void InitDisablePausesForIndividualStage(CompositeDisposable disposables)
         {
@@ -219,11 +219,11 @@ namespace Hand2Note.ProgressView.ViewModel
         
         
         [Reactive]
-        public ReactiveCommand<Unit, Unit> StartTwoViews { get; set; }
+        public ReactiveCommand<Unit, Unit>? StartTwoViews { get; set; }
         [Reactive]
-        public ProgressViewModel Follower1 { get; set; }
+        public ProgressViewModel? Follower1 { get; set; }
         [Reactive]
-        public ProgressViewModel Follower2 { get; set; }
+        public ProgressViewModel? Follower2 { get; set; }
         
         private void InitExternallyControllled(CompositeDisposable disposables)
         {
@@ -251,7 +251,7 @@ namespace Hand2Note.ProgressView.ViewModel
         
         
         [Reactive]
-        public ProgressViewModel RealDownload { get; set; }
+        public ProgressViewModel? RealDownload { get; set; }
 
         private const string url = "http://h2n-uptoyou.azureedge.net/main/Hand2NoteInstaller.exe";
         
