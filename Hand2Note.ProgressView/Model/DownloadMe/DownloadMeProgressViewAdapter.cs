@@ -13,7 +13,7 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
         private const string Paused = "Paused";
         private const string Finished = "Finished";
         
-        public static IObservable<ProgressNotification> FsmStatesToNotifications(DownloadMeFsm fsm)
+        public static IObservable<BaseProgressNotification> FsmStatesToNotifications(DownloadMeFsm fsm)
         {
             var stateInfos = fsm.States
                 .Select(x =>
@@ -60,7 +60,7 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
 
                     bool hideRemainingTime = x.State != DownloadMeStateType.Downloading;
                     
-                    return new ProgressNotification(
+                    return new BaseProgressNotification(
                         x.Progress,
                         x.ProgressIncrement,
                         fsm.TotalBytesToDownload,

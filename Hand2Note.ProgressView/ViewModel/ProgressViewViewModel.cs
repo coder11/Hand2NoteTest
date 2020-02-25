@@ -32,7 +32,7 @@ namespace Hand2Note.ProgressView.ViewModel
 
         public int Progress { [ObservableAsProperty] get; }
         
-        public bool DisplayAsProgressless { [ObservableAsProperty] get; }
+        public bool DisplayAsProgressLess { [ObservableAsProperty] get; }
 
         public string Speed { [ObservableAsProperty] get; }
         
@@ -54,7 +54,7 @@ namespace Hand2Note.ProgressView.ViewModel
         
         private void InitializeObservables(IObservable<IProgressNotification> notifications, ProgressViewModelConfig config, Action start, Action restart, Action pause, Action resume)
         {
-            notifications = notifications.StartWith(new ProgressNotification(
+            notifications = notifications.StartWith(new BaseProgressNotification(
                 0,
                 null,
                 1,
@@ -155,7 +155,7 @@ namespace Hand2Note.ProgressView.ViewModel
                 .ToPropertyOnMainThread(this, x => x.ProgressMaxValue);
 
             notifications.Select(x => x.DisplayAsProgressLess)
-                .ToPropertyOnMainThread(this, x => x.DisplayAsProgressless);
+                .ToPropertyOnMainThread(this, x => x.DisplayAsProgressLess);
 
             var consecutiveProgressNotifications = notifications
                 .Where(x => !x.DisplayAsProgressLess && x.ProgressIncrement.HasValue)
@@ -188,7 +188,7 @@ namespace Hand2Note.ProgressView.ViewModel
 
                     var rounded = (int) Math.Round(x);
                     var text = config.Units.GetPresentableText(rounded);
-                    return string.Format(config.SpeedTextTemplate, text);
+                    return string.Format(config.SpeedTextTemplate, text, rounded);
                 })
                 .ToPropertyOnMainThread(this, x => x.Speed);
 
@@ -197,7 +197,9 @@ namespace Hand2Note.ProgressView.ViewModel
                 {
                     return string.Format(config.ProgressTextTemplate,
                         config.Units.GetPresentableText(x.Progress),
-                        config.Units.GetPresentableText(x.ProgressMaxValue));
+                        config.Units.GetPresentableText(x.ProgressMaxValue),
+                        x.Progress,
+                        x.ProgressMaxValue);
                 })
                 .ToPropertyOnMainThread(this, x => x.ProgressText);
 

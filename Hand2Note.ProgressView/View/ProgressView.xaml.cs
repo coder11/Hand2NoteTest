@@ -26,7 +26,7 @@ namespace Hand2Note.ProgressView.View
                 ));
                 
                 disposable(this.OneWayBind(ViewModel,
-                    vm => vm.DisplayAsProgressless,
+                    vm => vm.DisplayAsProgressLess,
                     v => v.Progress.IsIndeterminate
                 ));
                 

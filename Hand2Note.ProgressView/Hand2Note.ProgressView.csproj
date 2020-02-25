@@ -103,6 +103,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppBootstrapper.cs" />
+    <Compile Include="Model\DemoProgress.cs" />
     <Compile Include="Model\DownloadMe\DownloadMeFsm.cs" />
     <Compile Include="Model\DownloadMe\DownloadMeProgressViewAdapter.cs" />
     <Compile Include="Model\DownloadMe\DownloadMeState.cs" />
@@ -113,11 +114,14 @@
     <Compile Include="Util\CollectionExtensions.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ProgressViewViewModel.cs" />
-    <Compile Include="ViewModel\Progress\BytesUnitInfo.cs" />
     <Compile Include="ViewModel\Progress\IProgressNotification.cs" />
     <Compile Include="ViewModel\Progress\IUnitInfo.cs" />
+    <Compile Include="ViewModel\Progress\BaseProgressNotification.cs" />
     <Compile Include="ViewModel\Progress\ProgressNotification.cs" />
     <Compile Include="ViewModel\Progress\ProgressViewModelConfig.cs" />
+    <Compile Include="ViewModel\Progress\Units\BareUnitInfo.cs" />
+    <Compile Include="ViewModel\Progress\Units\BytesUnitInfo.cs" />
+    <Compile Include="ViewModel\Progress\Units\FilesUnitInfo.cs" />
     <Compile Include="View\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>

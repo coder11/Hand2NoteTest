@@ -11,6 +11,11 @@
                 <Setter Property="Foreground" Value="Black" />
                 <Setter Property="FontSize" Value="12"/>
             </Style>
+            
+            <Style TargetType="TextBlock" x:Key="HeaderText">
+                <Setter Property="Foreground" Value="Black" />
+                <Setter Property="FontSize" Value="16"/>
+            </Style>
                 
             <Style TargetType="Button">
                 <Setter Property="Template">

@@ -1,3 +1,5 @@
+using Hand2Note.ProgressView.ViewModel.Progress.Units;
+
 namespace Hand2Note.ProgressView.ViewModel.Progress
 {
     public class ProgressViewModelConfig

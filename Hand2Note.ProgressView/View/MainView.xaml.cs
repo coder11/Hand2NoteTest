@@ -11,11 +11,6 @@ namespace Hand2Note.ProgressView.View
             this.WhenActivated(disposable =>
             {
                 disposable(this.Bind(ViewModel,
-                    vm => vm.DoDownloadMeVm,
-                    v => v.DownloadMe.ViewModel
-                ));
-                
-                disposable(this.Bind(ViewModel,
                     vm => vm.LightThemeChecked,
                     v => v.LightThemeRadioBtn.IsChecked
                 ));
@@ -28,6 +23,16 @@ namespace Hand2Note.ProgressView.View
                 disposable(this.Bind(ViewModel,
                     vm => vm.Theme,
                     v => v.Style
+                ));
+                
+                disposable(this.Bind(ViewModel,
+                    vm => vm.DoDownloadMeVm,
+                    v => v.DownloadMe.ViewModel
+                ));
+                
+                disposable(this.Bind(ViewModel,
+                    vm => vm.DifferentUnits,
+                    v => v.DifferentUnits.ViewModel
                 ));
             });
         }

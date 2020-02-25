@@ -1,7 +1,6 @@
 using System;
-using System.Globalization;
 
-namespace Hand2Note.ProgressView.ViewModel.Progress
+namespace Hand2Note.ProgressView.ViewModel.Progress.Units
 {
     public class BytesUnitInfo : IUnitInfo
     {
@@ -14,14 +13,6 @@ namespace Hand2Note.ProgressView.ViewModel.Progress
             var place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
             var num = Math.Round(bytes / Math.Pow(1024, place), 1);
             return Math.Sign(byteCount) * num + suf[place];
-        }
-    }
-    
-    public class BareUnitInfo : IUnitInfo
-    {
-        public string GetPresentableText(int value)
-        {
-            return value.ToString(CultureInfo.InvariantCulture);
         }
     }
 }

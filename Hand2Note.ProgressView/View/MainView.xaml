@@ -10,32 +10,51 @@
                           mc:Ignorable="d"
                           d:DesignHeight="300" d:DesignWidth="300">
     
-    <Grid Style="{DynamicResource SecondaryBackground}">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="400"/>
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-       
-        <StackPanel Grid.Column="1" Style="{DynamicResource PrimaryBackground}">
-            
-            <GroupBox Header="Theme" BorderThickness="0">
-                <StackPanel Orientation="Horizontal">
-                    
-                    <RadioButton x:Name="LightThemeRadioBtn"
-                                 GroupName="Theme" 
-                                 Content="Light"/>
-                    
-                    <RadioButton x:Name="DarkThemeRadioBtn" 
-                                 GroupName="Theme" 
-                                 Content="Dark" 
-                                 Margin="10 0 0 0"/>
-                    
-                </StackPanel>
-            </GroupBox>
-            
-            <local:ProgressView x:Name="DownloadMe" HorizontalAlignment="Center"
-                                Width="400"/>
-        </StackPanel>
-    </Grid>
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto">
+        <Grid Style="{DynamicResource SecondaryBackground}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+           
+            <StackPanel Grid.Column="1" Style="{DynamicResource PrimaryBackground}">
+                
+                <GroupBox Header="Theme" BorderThickness="0">
+                    <StackPanel Orientation="Horizontal">
+                        
+                        <RadioButton x:Name="LightThemeRadioBtn"
+                                     GroupName="Theme" 
+                                     Content="Light"/>
+                        
+                        <RadioButton x:Name="DarkThemeRadioBtn" 
+                                     GroupName="Theme" 
+                                     Content="Dark" 
+                                     Margin="10 0 0 0"/>
+                        
+                    </StackPanel>
+                </GroupBox>
+                
+                <TextBlock Style="{DynamicResource HeaderText}" 
+                           Text="Simulate download with DownloadMe code" 
+                           Margin="10 20 -5 0"/>
+                
+                <local:ProgressView x:Name="DownloadMe" 
+                                    HorizontalAlignment="Stretch" />
+                
+                
+                
+                <TextBlock Style="{DynamicResource HeaderText}" 
+                           Text="Demonstrating support for other type of units" 
+                           Margin="10 20 -5 0"/>
+                
+                <local:ProgressView x:Name="DifferentUnits"
+                                    HorizontalAlignment="Stretch" />
+                
+                
+                
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </rxui:ReactiveUserControl>
