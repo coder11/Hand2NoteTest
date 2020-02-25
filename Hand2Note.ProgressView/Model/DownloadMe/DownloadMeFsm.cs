@@ -60,8 +60,8 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
                 case DownloadMeStateType.Connecting:
                 case DownloadMeStateType.Downloading:
                 case DownloadMeStateType.Finishing:
-                    ChangeState(_state.UpdateType(DownloadMeStateType.Pausing));
                     _state.Token.Cancel();
+                    ChangeState(_state.UpdateType(DownloadMeStateType.Pausing));
                     break;
                     
                 default:
@@ -160,6 +160,10 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
                 case  DownloadMeStateType.Finishing:
                     ChangeState(_state.UpdateType(DownloadMeStateType.Finished));
                     break;
+                
+                case DownloadMeStateType.Pausing:
+                    ChangeState(_state.UpdateType(DownloadMeStateType.Paused));
+                    break;
                     
                 default:
                     ThrowInvalidStateTransition();
@@ -188,6 +192,9 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
             {
                 case DownloadMeStateType.Connecting:
                     ChangeState(_state.UpdateType(DownloadMeStateType.Downloading));
+                    break;
+                
+                case DownloadMeStateType.Pausing:
                     break;
                 
                 default:

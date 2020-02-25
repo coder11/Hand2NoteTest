@@ -18,9 +18,9 @@ namespace Hand2Note.ProgressView.ViewModel
 
         private readonly TimeSpan TextRefreshRate = TimeSpan.FromSeconds(1);
         
-        public ProgressViewModel(IObservable<IProgressNotification> notifications, ProgressViewModelConfig config, Action onStart, Action onPause, Action onResume)
+        public ProgressViewModel(IObservable<IProgressNotification> notifications, ProgressViewModelConfig config, Action start, Action restart, Action pause, Action resume)
         {
-            InitializeObservables(notifications, config, onStart, onPause, onResume);
+            InitializeObservables(notifications, config, start, restart, pause, resume);
         }
 
         private ReactiveCommand<Unit, Unit> _startCommand;
@@ -52,7 +52,7 @@ namespace Hand2Note.ProgressView.ViewModel
 
         public ReactiveCommand<Unit, Unit> Command { [ObservableAsProperty] get; }
         
-        private void InitializeObservables(IObservable<IProgressNotification> notifications, ProgressViewModelConfig config, Action onStart, Action onPause, Action onResume)
+        private void InitializeObservables(IObservable<IProgressNotification> notifications, ProgressViewModelConfig config, Action start, Action restart, Action pause, Action resume)
         {
             notifications = notifications.StartWith(new ProgressNotification(
                 0,
@@ -67,7 +67,8 @@ namespace Hand2Note.ProgressView.ViewModel
                 false,
                 string.Empty));
 
-            var startCommandFired = this.WhenAnyObservable(x => x._startCommand);
+            var startCommandFired = this.WhenAnyObservable(x => x._startCommand, x => x._restartCommand)
+                .Select(_ => true);
 
             var isRunning = startCommandFired
                 .Select(x => true)
@@ -77,42 +78,32 @@ namespace Hand2Note.ProgressView.ViewModel
                 .StartWith(false);
 
             var wasNeverRun = startCommandFired
-                .Select(x => true)
+                .Select(x => false)
                 .StartWith(true);
-
-            var canStartExecute = isRunning
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Select(x => !x && onStart != null);
-
-            var canPauseExecute = notifications.Select(x => x.AllowPause && onPause != null)
+                
+            var canStartExecute = wasNeverRun
                 .ObserveOn(RxApp.MainThreadScheduler);
 
-            var canResumeExecute = notifications.Select(x => x.AllowResume && onResume != null)
+            var canRestartExecute = isRunning
+                .Select(x => !x)
+                .ObserveOn(RxApp.MainThreadScheduler);
+                
+
+            var canPauseExecute = notifications.Select(x => x.AllowPause && pause != null)
                 .ObserveOn(RxApp.MainThreadScheduler);
 
-            _startCommand = ReactiveCommand.Create(onStart, canStartExecute);
-            _restartCommand = _startCommand;
-            _pauseCommand = ReactiveCommand.Create(onPause, canPauseExecute);
-            _resumeCommand = ReactiveCommand.Create(onResume, canResumeExecute);
+            var canResumeExecute = notifications.Select(x => x.AllowResume && resume != null)
+                .ObserveOn(RxApp.MainThreadScheduler);
+
+            _startCommand = ReactiveCommand.Create(start, canStartExecute);
+            _restartCommand = ReactiveCommand.Create(restart, canRestartExecute);
+            _pauseCommand = ReactiveCommand.Create(pause, canPauseExecute);
+            _resumeCommand = ReactiveCommand.Create(resume, canResumeExecute);
 
             var currentlyAvailableCommand =
                 Observable.CombineLatest(notifications, isRunning, wasNeverRun,
                     (stateInfo, isRunning_, wasNeverRun_) =>
                     {
-                        if (isRunning_ && stateInfo.AllowPause)
-                            return new
-                            {
-                                Command = _pauseCommand,
-                                Caption = config.PauseButtonText
-                            };
-
-                        if (isRunning_ && stateInfo.AllowResume)
-                            return new
-                            {
-                                Command = _resumeCommand,
-                                Caption = config.ResumeButtonText
-                            };
-
                         if (wasNeverRun_)
                             return new
                             {
@@ -120,20 +111,39 @@ namespace Hand2Note.ProgressView.ViewModel
                                 Caption = config.StartButtonText
                             };
 
-                        return new
-                        {
-                            Command = _startCommand,
-                            Caption = config.RestartButtonText
-                        };
+                        if (!isRunning_)
+                            return new
+                            {
+                                Command = _restartCommand,
+                                Caption = config.RestartButtonText
+                            };
+
+                        if (stateInfo.AllowPause)
+                            return new
+                            {
+                                Command = _pauseCommand,
+                                Caption = config.PauseButtonText
+                            };
+                        
+                        if (stateInfo.AllowResume)
+                            return new
+                            {
+                                Command = _resumeCommand,
+                                Caption = config.ResumeButtonText
+                            };
+
+                        return null;
                     });
 
             currentlyAvailableCommand
+                .Where(x => x != null)
                 .Select(x => x.Command)
                 .ToPropertyOnMainThread(this, x => x.Command);
 
             currentlyAvailableCommand
+                .Where(x => x != null)
                 .Select(x => x.Caption)
-                .ToPropertyOnMainThread(this, x => x.CommandButtonText);
+                .ToPropertyOnMainThread(this, x => x.CommandButtonText, config.StartButtonText);
 
             notifications.Select(x => x.Caption)
                 .ToPropertyOnMainThread(this, x => x.Caption);

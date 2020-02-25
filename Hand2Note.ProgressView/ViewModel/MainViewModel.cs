@@ -46,7 +46,7 @@ namespace Hand2Note.ProgressView.ViewModel
                 Units = new BytesUnitInfo(),
             };
 
-            DoDownloadMeVm = new ProgressViewModel(notifications, config, fsm.OnStart, fsm.OnPause, fsm.OnResume);
+            DoDownloadMeVm = new ProgressViewModel(notifications, config, fsm.OnStart, fsm.OnStart, fsm.OnPause, fsm.OnResume);
         }
     }
 }
