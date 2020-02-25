@@ -1,5 +1,9 @@
 // ReSharper disable UnassignedGetOnlyAutoProperty
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Drawing.Text;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -27,7 +31,11 @@ namespace Hand2Note.ProgressView.ViewModel
             InitDownloadMeVm();
             InitDifferentUnits();
             InitCustomTexts();
-
+            InitDisableRestarts();
+            InitDisablePauses();
+            InitDisablePausesForIndividualStage();
+            InitExternallyControllled();
+        
             LightThemeChecked = true;
             
             this.WhenAnyValue(x => x.LightThemeChecked)
@@ -53,6 +61,7 @@ namespace Hand2Note.ProgressView.ViewModel
             var notifications = DownloadMeProgressViewAdapter.FsmStatesToNotifications(fsm);
             var config = new ProgressViewModelConfig
             {
+                ProgressTextTemplate = "Downloaded: {0} / {1}",
                 Units = new BytesUnitInfo(),
             };
 
@@ -111,12 +120,53 @@ namespace Hand2Note.ProgressView.ViewModel
             CustomTexts = new ProgressViewModel(progress.Notifications, config, progress.Start, progress.Start, progress.Pause, progress.Resume);
         }
         
+        
         [Reactive]
         public ProgressViewModel DisableRestarts { get; set; }
+
+        private void InitDisableRestarts()
+        {
+            var progress = NewSimpleProgress();
+            DisableRestarts = new ProgressViewModel(progress.Notifications, new ProgressViewModelConfig(), start: progress.Start, pause: progress.Pause, resume:progress.Resume);
+        }
+
+        
         [Reactive]
         public ProgressViewModel DisablePauses { get; set; }
+
+        private void InitDisablePauses()
+        {
+            var progress = NewSimpleProgress();
+            DisablePauses = new ProgressViewModel(progress.Notifications, new ProgressViewModelConfig(), start: progress.Start);
+        }
+        
+        
         [Reactive]
         public ProgressViewModel DisablePausesForIndividualStage { get; set; }
+        
+        private void InitDisablePausesForIndividualStage()
+        {
+            IEnumerable<IProgressNotification> pausable = Enumerable.Range(0, 5)
+                .Select(x => new ProgressNotification(x, 1, 4, $"This can be paused", true));
+            
+            var pausableProgressLess = new ProgressLessNotification("ProgressLess that can be paused", true);
+            
+            var unPausable = Enumerable.Range(0, 5)
+                .Select(x => new ProgressNotification(x, 1, 4, $"This cannot be paused", false));
+            
+            var unPausableProgressLess = new ProgressLessNotification("ProgressLess that cannot be paused", false);
+
+            var all = new[] {pausableProgressLess}
+                .Concat(pausable)
+                .Concat(new[] {unPausableProgressLess})
+                .Concat(unPausable)
+                .ToArray(); 
+            
+            var progress = new DemoProgressOperation(2000, all);
+            
+            DisablePausesForIndividualStage = new ProgressViewModel(progress.Notifications, new ProgressViewModelConfig(), start: progress.Start, pause: progress.Pause, resume: progress.Resume);
+        }
+        
         
         [Reactive]
         public ReactiveCommand<Unit, Unit> StartTwoViews { get; set; }
@@ -124,5 +174,28 @@ namespace Hand2Note.ProgressView.ViewModel
         public ProgressViewModel Follower1 { get; set; }
         [Reactive]
         public ProgressViewModel Follower2 { get; set; }
+        
+        private void InitExternallyControllled()
+        {
+            var progress = NewSimpleProgress();
+
+            var canExecute = this.WhenAnyObservable(x => x.StartTwoViews)
+                .Select(x => false)
+                .StartWith(true);
+
+            StartTwoViews = ReactiveCommand.Create(progress.Start, canExecute);
+            
+            var vm = new ProgressViewModel(progress.Notifications, new ProgressViewModelConfig());
+            Follower1 = vm;
+            Follower2 = vm;
+        }
+        
+        
+        private DemoProgressOperation NewSimpleProgress()
+        {
+            return new DemoProgressOperation(250,
+                Enumerable.Range(0, 21)
+                    .Select(x => new ProgressNotification(x, 1, 20, $"Doing work", true)));
+        }
     }
 }

@@ -12,7 +12,7 @@ namespace Hand2Note.ProgressView.ViewModel.Progress
 
         public string SpeedTextTemplate { get; set; } = "Speed: {0}/s";
 
-        public string ProgressTextTemplate { get; set; } = "Downloaded: {0} / {1}";
+        public string ProgressTextTemplate { get; set; } = "Done: {0} / {1}";
 
         public string RemainingTimeTextTemplate { get; set; } = "Time remaining: {0:mm\\:ss}";
     }

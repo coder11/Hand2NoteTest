@@ -57,7 +57,7 @@ namespace Hand2Note.ProgressView.View
                 
                 disposable(this.BindCommand(ViewModel,
                     vm => vm.StartTwoViews,
-                    v => v.StartTwoViews.Command
+                    v => v.StartTwoViews
                 ));
                 
                 disposable(this.Bind(ViewModel,

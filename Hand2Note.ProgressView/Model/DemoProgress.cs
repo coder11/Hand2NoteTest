@@ -1,12 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing.Text;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
 using Hand2Note.ProgressView.ViewModel.Progress;

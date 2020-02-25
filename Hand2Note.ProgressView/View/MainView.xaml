@@ -87,7 +87,7 @@
                 
                 
                 <TextBlock Style="{DynamicResource HeaderText}" 
-                           Text="All control elements can be disables. Two views below are controlled externally" 
+                           Text="All control elements can be disabled. Two views below are controlled externally" 
                            Margin="10 20 -5 0"
                            TextWrapping="Wrap"/>
                 
@@ -104,6 +104,10 @@
                 <local:ProgressView x:Name="Follower2"
                                     Margin="0 -5 0 0"
                                     HorizontalAlignment="Stretch" />
+                
+                <TextBlock Style="{DynamicResource SecondaryText}" Margin="0 20">
+                    Just to make scroll area bigger :)
+                </TextBlock>
                 
             </StackPanel>
         </Grid>

@@ -18,7 +18,7 @@ namespace Hand2Note.ProgressView.ViewModel
 
         private readonly TimeSpan TextRefreshRate = TimeSpan.FromSeconds(1);
         
-        public ProgressViewModel(IObservable<IProgressNotification> notifications, ProgressViewModelConfig config, Action start, Action restart, Action pause, Action resume)
+        public ProgressViewModel(IObservable<IProgressNotification> notifications, ProgressViewModelConfig config, Action start = null, Action restart = null, Action pause = null, Action resume = null)
         {
             InitializeObservables(notifications, config, start, restart, pause, resume);
         }
