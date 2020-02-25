@@ -46,7 +46,7 @@
                 
                 
                 <TextBlock Style="{DynamicResource HeaderText}" 
-                           Text="Demonstrating support for other type of units" 
+                           Text="Supports other types of units" 
                            Margin="10 20 -5 0"/>
                 
                 <local:ProgressView x:Name="DifferentUnits"
