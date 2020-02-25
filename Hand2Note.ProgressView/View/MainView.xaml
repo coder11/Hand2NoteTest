@@ -1,4 +1,4 @@
-<rxui:ReactiveUserControl x:Class="Hand2Note.ProgressView.View.MainView" 
+<rxui:ReactiveUserControl x:Class="Hand2Note.ProgressView.View.MainView"
                           x:TypeArguments="viewModel:MainViewModel"
                           xmlns:rxui="http://reactiveui.net"
                           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -9,124 +9,121 @@
                           xmlns:viewModel="clr-namespace:Hand2Note.ProgressView.ViewModel"
                           mc:Ignorable="d"
                           d:DesignHeight="300" d:DesignWidth="300">
-    
+
     <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                   VerticalScrollBarVisibility="Auto">
         <Grid Style="{DynamicResource SecondaryBackground}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="400" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-           
+
             <StackPanel Grid.Column="1" Style="{DynamicResource PrimaryBackground}">
-                
+
                 <GroupBox Header="Theme" BorderThickness="0">
                     <StackPanel Orientation="Horizontal">
-                        
+
                         <RadioButton x:Name="LightThemeRadioBtn"
-                                     GroupName="Theme" 
-                                     Content="Light"/>
-                        
-                        <RadioButton x:Name="DarkThemeRadioBtn" 
-                                     GroupName="Theme" 
-                                     Content="Dark" 
-                                     Margin="10 0 0 0"/>
-                        
+                                     GroupName="Theme"
+                                     Content="Light" />
+
+                        <RadioButton x:Name="DarkThemeRadioBtn"
+                                     GroupName="Theme"
+                                     Content="Dark"
+                                     Margin="10 0 0 0" />
+
                     </StackPanel>
                 </GroupBox>
-                
-                <TextBlock Style="{DynamicResource HeaderText}" 
-                           Text="Simulate download with DownloadMe code" 
-                           Margin="10 20 -5 0"/>
-                
-                <local:ProgressView x:Name="DownloadMe" 
+
+                <TextBlock Style="{DynamicResource HeaderText}"
+                           Text="Simulate download with DownloadMe code"
+                           Margin="10 20 -5 0" />
+
+                <local:ProgressView x:Name="DownloadMe"
                                     HorizontalAlignment="Stretch" />
-                
-                
-                
-                <TextBlock Style="{DynamicResource HeaderText}" 
-                           Text="Supports other types of units" 
-                           Margin="10 20 -5 0"/>
-                
+
+
+                <TextBlock Style="{DynamicResource HeaderText}"
+                           Text="Supports other types of units"
+                           Margin="10 20 -5 0" />
+
                 <local:ProgressView x:Name="DifferentUnits"
                                     HorizontalAlignment="Stretch" />
-                
-                
-                <TextBlock Style="{DynamicResource HeaderText}" 
-                           Text="Everything is highly customizable" 
-                           Margin="10 20 -5 0"/>
-                
+
+
+                <TextBlock Style="{DynamicResource HeaderText}"
+                           Text="Everything is highly customizable"
+                           Margin="10 20 -5 0" />
+
                 <local:ProgressView x:Name="CustomTexts"
                                     HorizontalAlignment="Stretch" />
-                
-                
-                <TextBlock Style="{DynamicResource HeaderText}" 
-                           Text="Restarts can be disabled" 
-                           Margin="10 20 -5 0"/>
-                
+
+
+                <TextBlock Style="{DynamicResource HeaderText}"
+                           Text="Restarts can be disabled"
+                           Margin="10 20 -5 0" />
+
                 <local:ProgressView x:Name="DisableRestarts"
                                     HorizontalAlignment="Stretch" />
 
-                
-                <TextBlock Style="{DynamicResource HeaderText}" 
-                           Text="As well as pauses" 
-                           Margin="10 20 -5 0"/>
-                
+
+                <TextBlock Style="{DynamicResource HeaderText}"
+                           Text="As well as pauses"
+                           Margin="10 20 -5 0" />
+
                 <local:ProgressView x:Name="DisablePauses"
                                     HorizontalAlignment="Stretch" />
-                
-                
-                <TextBlock Style="{DynamicResource HeaderText}" 
-                           Text="Even for individual stages" 
-                           Margin="10 20 -5 0"/>
-                
+
+
+                <TextBlock Style="{DynamicResource HeaderText}"
+                           Text="Even for individual stages"
+                           Margin="10 20 -5 0" />
+
                 <local:ProgressView x:Name="DisablePausesForIndividualStage"
                                     HorizontalAlignment="Stretch" />
-                
-                
-                
-                <TextBlock Style="{DynamicResource HeaderText}" 
-                           Text="Supports operations chain" 
-                           Margin="10 20 -5 0"/>
-                
+
+
+                <TextBlock Style="{DynamicResource HeaderText}"
+                           Text="Supports operations chain"
+                           Margin="10 20 -5 0" />
+
                 <local:ProgressView x:Name="OperationsChain"
                                     HorizontalAlignment="Stretch" />
-                
-                
-                <TextBlock Style="{DynamicResource HeaderText}" 
-                           Text="Real example: downloads Hand2Note to temp directory" 
-                           Margin="10 20 -5 0"/>
-                
+
+
+                <TextBlock Style="{DynamicResource HeaderText}"
+                           Text="Real example: downloads Hand2Note to temp directory"
+                           Margin="10 20 -5 0" />
+
                 <local:ProgressView x:Name="RealDownload"
                                     HorizontalAlignment="Stretch" />
 
-                
-                
-                <TextBlock Style="{DynamicResource HeaderText}" 
-                           Text="All control elements can be disabled. Two views below are controlled externally" 
+
+                <TextBlock Style="{DynamicResource HeaderText}"
+                           Text="All control elements can be disabled. Two views below are controlled externally"
                            Margin="10 20 -5 0"
-                           TextWrapping="Wrap"/>
-                
-                <Button x:Name="StartTwoViews" 
+                           TextWrapping="Wrap" />
+
+                <Button x:Name="StartTwoViews"
                         Margin="2 0 0 0"
                         MinHeight="20"
                         HorizontalAlignment="Right">
                     Run operation
                 </Button>
-                
+
                 <local:ProgressView x:Name="Follower1"
                                     HorizontalAlignment="Stretch" />
-                
+
                 <local:ProgressView x:Name="Follower2"
                                     Margin="0 -5 0 0"
                                     HorizontalAlignment="Stretch" />
-                
-                
+
+
                 <TextBlock Style="{DynamicResource SecondaryText}" Margin="0 20">
                     Just to make scroll area bigger :)
                 </TextBlock>
-                
+
             </StackPanel>
         </Grid>
     </ScrollViewer>

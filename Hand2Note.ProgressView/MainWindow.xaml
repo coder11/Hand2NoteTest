@@ -7,5 +7,5 @@
         xmlns:viewModel="clr-namespace:Hand2Note.ProgressView.ViewModel"
         mc:Ignorable="d"
         Title="MainWindow" d:Height="768" d:Width="1024" Height="768" Width="1024">
-    <view:MainView x:Name="Main"/>
+    <view:MainView x:Name="Main" />
 </Window>

@@ -15,17 +15,17 @@ namespace Hand2Note.ProgressView.Model
     {
         private readonly (IProgressNotification, int)[] _notifications;
         private readonly Subject<IProgressNotification> _subject;
-        
-        private int _i = 0;
+
+        private int _i;
         private CancellationTokenSource? _token;
-        
+
         public DemoProgressOperation(int timeoutMs, IEnumerable<IProgressNotification> notifications)
         {
             _notifications = notifications.Select(x => (x, timeoutMs)).ToArray();
-            
+
             _subject = new Subject<IProgressNotification>();
         }
-        
+
         public DemoProgressOperation(params (IProgressNotification notification, int timeoutMs)[] notifications)
         {
             _notifications = notifications.ToArray();
@@ -33,17 +33,23 @@ namespace Hand2Note.ProgressView.Model
         }
 
         public string PausedCaption { get; set; } = "Paused";
-        
+
         public string FinishedCaption { get; set; } = "Finished";
 
         public IObservable<IProgressNotification> Notifications => _subject.ObserveOn(RxApp.TaskpoolScheduler);
+
+        public void Dispose()
+        {
+            _subject?.Dispose();
+            _token?.Dispose();
+        }
 
         public void Start()
         {
             _i = 0;
             Resume();
         }
-        
+
         public void Resume()
         {
             _token = new CancellationTokenSource();
@@ -68,12 +74,6 @@ namespace Hand2Note.ProgressView.Model
         {
             _token?.Cancel();
             _subject.OnNext(new PausedNotification(PausedCaption));
-        }
-
-        public void Dispose()
-        {
-            _subject?.Dispose();
-            _token?.Dispose();
         }
     }
 }

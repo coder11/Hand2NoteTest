@@ -9,9 +9,10 @@ namespace Hand2Note.ProgressView.ViewModel.Progress.Notifications
             ProgressMaxValue = progressMaxValue;
         }
 
-        public string Caption { get; }
         public int ProgressMaxValue { get; }
         public int Progress { get; }
+
+        public string Caption { get; }
         public bool AllowPause => false;
     }
 }

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Linq;
 
 namespace Hand2Note.ProgressView.Util

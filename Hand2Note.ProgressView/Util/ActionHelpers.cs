@@ -4,7 +4,6 @@ namespace Hand2Note.ProgressView.Util
     {
         public static void Empty()
         {
-            
         }
     }
 }

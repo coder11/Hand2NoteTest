@@ -11,6 +11,6 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
         Paused = 5,
         Starting = 6,
         Finishing = 7,
-        Finished = 8,
+        Finished = 8
     }
 }

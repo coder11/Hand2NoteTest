@@ -4,13 +4,19 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
 {
     public class DownloadMeState
     {
-        public DownloadMeState(DownloadMeStateType state, int progress, int? progressIncrement, CancellationTokenSource token)
+        public DownloadMeState(DownloadMeStateType state, int progress, int? progressIncrement,
+            CancellationTokenSource token)
         {
             State = state;
             Progress = progress;
             ProgressIncrement = progressIncrement;
             Token = token;
         }
+
+        public DownloadMeStateType State { get; }
+        public int Progress { get; }
+        public int? ProgressIncrement { get; }
+        public CancellationTokenSource Token { get; }
 
         public DownloadMeState UpdateProgress(int increment)
         {
@@ -29,7 +35,7 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
                 null,
                 Token);
         }
-        
+
         public DownloadMeState UpdateToken(CancellationTokenSource newToken)
         {
             return new DownloadMeState(
@@ -38,10 +44,5 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
                 ProgressIncrement,
                 newToken);
         }
-
-        public DownloadMeStateType State { get; }
-        public int Progress { get; }
-        public int? ProgressIncrement { get; }
-        public CancellationTokenSource Token { get; }
     }
 }

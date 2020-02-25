@@ -13,7 +13,7 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
         private const string Paused = "Paused";
         private const string Pausing = "Pausing";
         private const string Finished = "Finished";
-        
+
         public static IObservable<IProgressNotification> FsmStatesToNotifications(DownloadMeFsm fsm)
         {
             var stateInfos = fsm.States
@@ -24,29 +24,30 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
                         case DownloadMeStateType.Initial:
                         case DownloadMeStateType.Starting:
                             return new ProgressInitNotification(0, fsm.TotalBytesToDownload);
-                        
+
                         case DownloadMeStateType.Connecting:
                             return new ProgressLessNotification(Connecting, true);
-                        
+
                         case DownloadMeStateType.Connected:
                             return new ProgressNotification(x.Progress, 0, fsm.TotalBytesToDownload, Downloading, true);
-                        
+
                         case DownloadMeStateType.Downloading:
-                            return new ProgressNotification(x.Progress, x.ProgressIncrement!.Value, fsm.TotalBytesToDownload, Downloading, true);
-                        
+                            return new ProgressNotification(x.Progress, x.ProgressIncrement!.Value,
+                                fsm.TotalBytesToDownload, Downloading, true);
+
                         case DownloadMeStateType.Pausing:
                             return new ProgressLessNotification(Pausing, true);
-                        
+
                         case DownloadMeStateType.Paused:
                             return new PausedNotification(Paused);
-                        
-                        
+
+
                         case DownloadMeStateType.Finishing:
                             return new ProgressLessNotification(Finishing, true);
-                        
+
                         case DownloadMeStateType.Finished:
                             return new FinishedNotification(Finished);
-                        
+
                         default:
                             throw new ArgumentException();
                     }

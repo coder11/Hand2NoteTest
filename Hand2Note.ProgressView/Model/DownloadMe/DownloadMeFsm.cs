@@ -2,19 +2,16 @@ using System;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Controls;
-using ReactiveUI;
 
 namespace Hand2Note.ProgressView.Model.DownloadMe
 {
     public class DownloadMeFsm : IDisposable
     {
         private readonly ThirdParty.DownloadMe _downloadMe;
-
+        private readonly Subject<DownloadMeState> _subject = new Subject<DownloadMeState>();
+        
         private DownloadMeState _state;
         
-        private readonly Subject<DownloadMeState> _subject = new Subject<DownloadMeState>();
-
         public static DownloadMeFsm Create()
         {
             var initialState = new DownloadMeState(
@@ -28,6 +25,11 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
         public IObservable<DownloadMeState> States => _subject;
 
         public int TotalBytesToDownload => _downloadMe.TotalBytesToDownload;
+        
+        public void Dispose()
+        {
+            _subject?.Dispose();
+        }
         
         public void OnStart()
         {
@@ -207,11 +209,6 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
         private void ThrowInvalidStateTransition()
         {
             throw new InvalidOperationException("Invalid downloadMe state transition");
-        }
-
-        public void Dispose()
-        {
-            _subject?.Dispose();
         }
     }
 }

@@ -12,14 +12,14 @@ namespace Hand2Note.ProgressView
             RegisterDeps(Locator.CurrentMutable);
             MainViewModel = Locator.Current.GetService<MainViewModel>();
         }
-        
+
         public MainViewModel MainViewModel { get; set; }
 
         private void RegisterDeps(IMutableDependencyResolver dependencyResolver)
         {
             dependencyResolver.InitializeSplat();
             dependencyResolver.InitializeReactiveUI();
-            
+
             dependencyResolver.RegisterViewsForViewModels(Assembly.GetExecutingAssembly());
             dependencyResolver.RegisterConstant(new MainViewModel());
         }

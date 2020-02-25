@@ -8,7 +8,6 @@ using System.Net;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Runtime.Remoting.Messaging;
 using System.Windows;
 using Hand2Note.ProgressView.Model;
 using Hand2Note.ProgressView.Model.DownloadMe;
