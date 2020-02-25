@@ -1,9 +1,6 @@
-using System.Management.Instrumentation;
 using System.Reflection;
-using Hand2Note.ProgressView.View;
 using Hand2Note.ProgressView.ViewModel;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using Splat;
 
 namespace Hand2Note.ProgressView

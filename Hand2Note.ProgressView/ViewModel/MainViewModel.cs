@@ -267,7 +267,7 @@ namespace Hand2Note.ProgressView.ViewModel
                 .Select(x => new ProgressNotification(x.Progress, x.Increment, x.ProgressMaxValue, "Downloading",false))
                 .Merge<IProgressNotification>(finished.Select(x => new FinishedNotification("Finished")));
             
-            RealDownload = new ProgressViewModel(notifications, new ProgressViewModelConfig { Units = new BytesUnitInfo() }, start: run);
+            RealDownload = new ProgressViewModel(notifications, new ProgressViewModelConfig { Units = new BytesUnitInfo() }, run);
         }
         
         private string GetTempFile()

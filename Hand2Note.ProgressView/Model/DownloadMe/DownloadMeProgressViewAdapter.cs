@@ -35,7 +35,7 @@ namespace Hand2Note.ProgressView.Model.DownloadMe
                             return new ProgressNotification(x.Progress, x.ProgressIncrement!.Value, fsm.TotalBytesToDownload, Downloading, true);
                         
                         case DownloadMeStateType.Pausing:
-                            return new ProgressLessNotification(Pausing, false);
+                            return new ProgressLessNotification(Pausing, true);
                         
                         case DownloadMeStateType.Paused:
                             return new PausedNotification(Paused);

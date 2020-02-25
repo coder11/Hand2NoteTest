@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Runtime.Remoting.Messaging;
 using Hand2Note.ProgressView.Util;
 using Hand2Note.ProgressView.ViewModel.Progress;
@@ -33,8 +34,6 @@ namespace Hand2Note.ProgressView.ViewModel
         public int ProgressMaxValue { [ObservableAsProperty] get; }
 
         public int Progress { [ObservableAsProperty] get; }
-        
-        public int ProgressVisible { [ObservableAsProperty] get; }
         
         public bool DisplayAsProgressLess { [ObservableAsProperty] get; }
 
@@ -67,17 +66,6 @@ namespace Hand2Note.ProgressView.ViewModel
             pause ??= ActionHelpers.Empty;
             resume ??= ActionHelpers.Empty;
 
-            var startCommandFired = this.WhenAnyObservable(x => x._startCommand, x => x._restartCommand)
-                .Select(_ => true);
-
-            var isRunning = startCommandFired
-                .Select(x => true)
-                .Merge(notifications
-                    .OfType<FinishedNotification>()
-                    .Select(x => false))
-                .StartWith(false)
-                .DistinctUntilChanged();
-
             var canResume = notifications
                 .Select(x => x is PausedNotification)
                 .StartWith(false)
@@ -86,30 +74,36 @@ namespace Hand2Note.ProgressView.ViewModel
             var allowPause = notifications.Select(x => x.AllowPause)
                 .StartWith(false)
                 .DistinctUntilChanged();
+            
+            var hasFinished = notifications
+                .Select(x => x is FinishedNotification)
+                .StartWith(false);
+            
+            var isPaused = notifications
+                .Select(x => x is PausedNotification)
+                .StartWith(false);
 
-            var wasNeverRun = startCommandFired
-                .Select(x => false)
-                .StartWith(true)
-                .DistinctUntilChanged();
-                
-            var canStartExecute = wasNeverRun
-                .Select(x => x && !disableStart)
-                .ObserveOn(RxApp.MainThreadScheduler);
-
-            var canRestartExecute = isRunning
-                .Select(x => !x && !disableRestart)
-                .ObserveOn(RxApp.MainThreadScheduler);
-
-            var canPauseExecute = allowPause.Select(x => x && !disablePause)
-                .ObserveOn(RxApp.MainThreadScheduler);
-
-            var canResumeExecute = canResume.Select(x => x && !disablePause)
-                .ObserveOn(RxApp.MainThreadScheduler);
-
+            var canStartExecute = new BehaviorSubject<bool>(!disableStart);
+            var canRestartExecute = new BehaviorSubject<bool>(!disableRestart);
+            var canPauseExecute = new BehaviorSubject<bool>(!disablePause);
+            var canResumeExecute = new BehaviorSubject<bool>(!disablePause);
+            
             _startCommand = ReactiveCommand.Create(start, canStartExecute);
             _restartCommand = ReactiveCommand.Create(restart, canRestartExecute);
             _pauseCommand = ReactiveCommand.Create(pause, canPauseExecute);
             _resumeCommand = ReactiveCommand.Create(resume, canResumeExecute);
+
+            _startCommand.Select(x => false).ObserveOn(RxApp.MainThreadScheduler).Subscribe(canStartExecute);
+            canResume.ObserveOn(RxApp.MainThreadScheduler).Subscribe(canResumeExecute);
+            hasFinished.BooleanAnd(!disableRestart).ObserveOn(RxApp.MainThreadScheduler).Subscribe(canRestartExecute);
+            
+            var pauseCommandCooldown = _pauseCommand.TrueUntil(isPaused);
+            allowPause.BooleanAnd(pauseCommandCooldown.Negate()).BooleanAnd(!disablePause).ObserveOn(RxApp.MainThreadScheduler).Subscribe(canPauseExecute);
+            
+            var wasNeverRun = _startCommand.TrueBefore();
+            var isRunning = _startCommand.Merge(_restartCommand)
+                .TrueUntil(notifications.OfType<FinishedNotification>())
+                .StartWith(false);
 
             var currentlyAvailableCommand =
                 Observable.CombineLatest(allowPause, isRunning, wasNeverRun, canResume,
@@ -247,10 +241,7 @@ namespace Hand2Note.ProgressView.ViewModel
             showSpeed
                 .ToPropertyOnMainThread(this, x => x.RemainingTimeVisible);
 
-            progressValueChangeNotifications
-                .Select(x => true)
-                .StartWith(false)
-                .DistinctUntilChanged()
+            progressValueChangeNotifications.TrueAfter()
                 .ToPropertyOnMainThread(this, x => x.ProgressTextVisible);
         }
     }
