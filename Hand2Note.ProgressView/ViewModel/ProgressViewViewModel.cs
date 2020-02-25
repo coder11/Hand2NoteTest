@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.Remoting.Messaging;
@@ -14,22 +15,28 @@ using ReactiveUI.Fody.Helpers;
 
 namespace Hand2Note.ProgressView.ViewModel
 {
-    public class ProgressViewModel : ReactiveObject
+    public class ProgressViewModel : ReactiveObject, IActivatableViewModel
     {
         private const double SpeedDeltaSecs = 1;
         private TimeSpan SpeedDelta => TimeSpan.FromSeconds(SpeedDeltaSecs);
 
         private readonly TimeSpan TextRefreshRate = TimeSpan.FromSeconds(1);
         
-        public ProgressViewModel(IObservable<IProgressNotification> notifications, ProgressViewModelConfig config, Action start = null, Action restart = null, Action pause = null, Action resume = null)
-        {
-            InitializeObservables(notifications, config, start, restart, pause, resume);
-        }
-
         private ReactiveCommand<Unit, Unit> _startCommand;
         private ReactiveCommand<Unit, Unit> _restartCommand;
         private ReactiveCommand<Unit, Unit> _pauseCommand;
         private ReactiveCommand<Unit, Unit> _resumeCommand;
+        
+        public ProgressViewModel(IObservable<IProgressNotification> notifications, ProgressViewModelConfig config, Action start = null, Action restart = null, Action pause = null, Action resume = null)
+        {
+            Activator = new ViewModelActivator();
+            this.WhenActivated(disposables =>
+            {
+                InitializeObservables(disposables, notifications, config, start, restart, pause, resume);
+            });
+        }
+
+        public ViewModelActivator Activator { get; }
 
         public int ProgressMaxValue { [ObservableAsProperty] get; }
 
@@ -55,7 +62,7 @@ namespace Hand2Note.ProgressView.ViewModel
 
         public ReactiveCommand<Unit, Unit> Command { [ObservableAsProperty] get; }
         
-        private void InitializeObservables(IObservable<IProgressNotification> notifications, ProgressViewModelConfig config, Action start, Action restart, Action pause, Action resume)
+        private void InitializeObservables(CompositeDisposable disposables, IObservable<IProgressNotification> notifications, ProgressViewModelConfig config, Action start, Action restart, Action pause, Action resume)
         {
             var disableStart = start == null;
             var disableRestart = restart == null;
@@ -92,13 +99,32 @@ namespace Hand2Note.ProgressView.ViewModel
             _restartCommand = ReactiveCommand.Create(restart, canRestartExecute);
             _pauseCommand = ReactiveCommand.Create(pause, canPauseExecute);
             _resumeCommand = ReactiveCommand.Create(resume, canResumeExecute);
-
-            _startCommand.Select(x => false).ObserveOn(RxApp.MainThreadScheduler).Subscribe(canStartExecute);
-            canResume.ObserveOn(RxApp.MainThreadScheduler).Subscribe(canResumeExecute);
-            hasFinished.BooleanAnd(!disableRestart).ObserveOn(RxApp.MainThreadScheduler).Subscribe(canRestartExecute);
             
             var pauseCommandCooldown = _pauseCommand.TrueUntil(isPaused);
-            allowPause.BooleanAnd(pauseCommandCooldown.Negate()).BooleanAnd(!disablePause).ObserveOn(RxApp.MainThreadScheduler).Subscribe(canPauseExecute);
+
+            allowPause
+                .BooleanAnd(pauseCommandCooldown.Negate())
+                .BooleanAnd(!disablePause)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(canPauseExecute)
+                .DisposeWith(disposables);
+            
+            _startCommand
+                .Select(x => false)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(canStartExecute)
+                .DisposeWith(disposables);
+
+            canResume
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(canResumeExecute)
+                .DisposeWith(disposables);
+
+            hasFinished
+                .BooleanAnd(!disableRestart)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(canRestartExecute)
+                .DisposeWith(disposables);
             
             var wasNeverRun = _startCommand.TrueBefore();
             var isRunning = _startCommand.Merge(_restartCommand)
